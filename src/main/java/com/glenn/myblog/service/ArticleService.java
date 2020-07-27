@@ -1,5 +1,6 @@
 package com.glenn.myblog.service;
 
+import com.glenn.myblog.domain.exception.ArticleNotFoundException;
 import com.glenn.myblog.domain.repository.ArticleRepository;
 import com.glenn.myblog.dto.ArticleDto;
 import lombok.RequiredArgsConstructor;
@@ -19,5 +20,11 @@ public class ArticleService {
                 .stream()
                 .map(ArticleDto::of)
                 .collect(Collectors.toList());
+    }
+
+    public ArticleDto getDetailArticle(Long id) {
+        return articleRepository.findById(id)
+                .map(ArticleDto::of)
+                .orElseThrow(() -> new ArticleNotFoundException(id));
     }
 }
