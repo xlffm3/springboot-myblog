@@ -1,5 +1,6 @@
 package com.glenn.myblog.service;
 
+import com.glenn.myblog.domain.entity.Article;
 import com.glenn.myblog.domain.exception.ArticleNotFoundException;
 import com.glenn.myblog.domain.repository.ArticleRepository;
 import com.glenn.myblog.dto.ArticleDto;
@@ -26,5 +27,10 @@ public class ArticleService {
         return articleRepository.findById(id)
                 .map(ArticleDto::of)
                 .orElseThrow(() -> new ArticleNotFoundException(id));
+    }
+
+    public ArticleDto createArticle(ArticleDto articleRequestDto) {
+        Article article = articleRequestDto.toEntity();
+        return ArticleDto.of(articleRepository.save(article));
     }
 }

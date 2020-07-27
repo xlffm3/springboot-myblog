@@ -25,4 +25,12 @@ public class ArticleDto {
                 .modifiedDate(entity.getModifiedDate())
                 .build();
     }
+
+    public Article toEntity() {
+        return Article.builder()
+                .id(id)
+                .authorName(authorName)
+                .content(content)
+                .build();
+    }
 }

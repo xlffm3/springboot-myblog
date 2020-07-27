@@ -87,7 +87,18 @@ public class ArticleServiceTest {
     @DisplayName("게시물 작성을 완료하면 Repository 추가 후 해당 ArticleDto 반환")
     @Test
     public void createArticle() {
+        Article article = Article.builder()
+                .id(1L)
+                .authorName("Doe")
+                .content("New")
+                .build();
 
+        when(articleRepository.save(any())).thenReturn(article);
+
+        ArticleDto articleRequestDto = ArticleDto.of(article);
+        ArticleDto articleResponseDto = articleService.createArticle(articleRequestDto);
+
+        assertThat(articleResponseDto.getAuthorName()).isEqualTo("Doe");
+        verify(articleRepository, times(1)).save(any());
     }
-
 }
