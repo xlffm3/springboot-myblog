@@ -1,6 +1,6 @@
 package com.glenn.myblog.service;
 
-import com.glenn.myblog.domain.model.Article;
+import com.glenn.myblog.domain.entity.Article;
 import com.glenn.myblog.domain.repository.ArticleRepository;
 import com.glenn.myblog.dto.ArticleDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,11 +43,11 @@ public class ArticleServiceTest {
                 .thenReturn(articles);
 
         List<ArticleDto> articleDtos = articleService.getAllArticles();
+        ArticleDto articleDto = articleDtos.get(0);
 
-        assertThat(articleDtos)
+        assertThat(articleDto.getId()).isEqualTo(1L);
+        assertThat(articleDto.getAuthorName()).isEqualTo("Tester");
     }
-    //TODO findAll (전체 목록 조회기때문에... 번호, 제목, 작성자명, 생성일자만)
-
     //TODO findById (이번에는 상세 내용이기때문에 내용까지 포함)
 
     //TODO POST (글 게시 요청)

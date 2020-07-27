@@ -1,4 +1,4 @@
-package com.glenn.myblog.domain.model;
+package com.glenn.myblog.domain.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

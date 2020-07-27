@@ -1,6 +1,6 @@
 package com.glenn.myblog.domain.repository;
 
-import com.glenn.myblog.domain.model.Article;
+import com.glenn.myblog.domain.entity.Article;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

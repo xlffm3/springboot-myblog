@@ -1,28 +1,28 @@
 package com.glenn.myblog.dto;
 
+import com.glenn.myblog.domain.entity.Article;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @Getter
-@NoArgsConstructor
 @Builder
 public class ArticleDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String authorName;
     private String content;
-    @CreatedDate
     private LocalDateTime createdDate;
-    @LastModifiedDate
     private LocalDateTime modifiedDate;
+
+    public static ArticleDto of(Article entity) {
+        return ArticleDto.builder()
+                .id(entity.getId())
+                .authorName(entity.getAuthorName())
+                .content(entity.getContent())
+                .createdDate(entity.getCreatedDate())
+                .modifiedDate(entity.getModifiedDate())
+                .build();
+    }
 }
