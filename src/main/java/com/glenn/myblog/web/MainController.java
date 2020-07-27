@@ -11,9 +11,3 @@ public class MainController {
         return "article-edit";
     }
 }
-
-/*
-게시글에 필요한 스펙
-
-id authorName content createdDate modifiedDate
- */

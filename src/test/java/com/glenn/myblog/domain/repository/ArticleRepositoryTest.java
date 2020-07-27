@@ -1,6 +1,6 @@
-package com.glenn.myblog.repository;
+package com.glenn.myblog.domain.repository;
 
-import com.glenn.myblog.domain.Article;
+import com.glenn.myblog.domain.model.Article;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,9 +29,11 @@ public class ArticleRepositoryTest {
         articleRepository.deleteAll();
     }
 
-    @DisplayName("Article 생성 시 JPA Auditing을 통해 작성 시간이 자동 저장")
+    @DisplayName("Article 생성 시 JPA Auditing을 통해 작성 및 수정 시간이 자동 저장")
     @Test
     public void auditCreatedDate() {
+        LocalDateTime localDateTime = LocalDateTime.now();
+
         testEntityManager.persist(Article.builder()
                 .authorName("Tester")
                 .content("Test")
@@ -39,6 +41,7 @@ public class ArticleRepositoryTest {
         Article article = articleRepository.findById(1L)
                 .orElse(null);
 
-        assertThat(article.getCreatedTime()).isAfter(LocalDateTime.now());
+        assertThat(article.getCreatedDate()).isAfter(localDateTime);
+        assertThat(article.getModifiedDate()).isAfter(localDateTime);
     }
 }
