@@ -34,16 +34,14 @@ public class ArticleServiceTest {
 
     @DisplayName("게시글 전체 조회")
     @Test
-    public void getAllArticles() {
-        Article article = Article.builder()
+    public void findAll() {
+        List<Article> articles = Arrays.asList(Article.builder()
                 .id(1L)
                 .authorName("Tester")
                 .content("test")
-                .build();
-        List<Article> articles = Arrays.asList(article);
+                .build());
 
-        when(articleRepository.findAll())
-                .thenReturn(articles);
+        when(articleRepository.findAll()).thenReturn(articles);
 
         List<ArticleDto> articleDtos = articleService.findAll();
         ArticleDto articleDto = articleDtos.get(0);
@@ -55,15 +53,14 @@ public class ArticleServiceTest {
 
     @DisplayName("ID로 특정 게시글 조회")
     @Test
-    public void getDetailArticleWithValidId() {
+    public void findById() {
         Article article = Article.builder()
                 .id(300L)
                 .authorName("Tester")
                 .content("test")
                 .build();
 
-        when(articleRepository.findById(300L))
-                .thenReturn(Optional.of(article));
+        when(articleRepository.findById(300L)).thenReturn(Optional.of(article));
 
         ArticleDto articleDto = articleService.findById(300L);
 
@@ -72,11 +69,10 @@ public class ArticleServiceTest {
         verify(articleRepository, times(1)).findById(eq(300L));
     }
 
-    @DisplayName("특정 게시글 조회시 ID가 없을 경우 예외")
+    @DisplayName("없는 ID로 특정 게시글 조회 시도시 예외 발생")
     @Test
-    public void getDetailArticleWithInvalidId() {
-        when(articleRepository.findById(300L))
-                .thenReturn(Optional.empty());
+    public void findById_예외() {
+        when(articleRepository.findById(300L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> {
             articleService.findById(300L);
@@ -86,7 +82,7 @@ public class ArticleServiceTest {
 
     @DisplayName("게시글 생성")
     @Test
-    public void createArticle() {
+    public void save() {
         Article article = Article.builder()
                 .id(1L)
                 .authorName("Doe")
@@ -104,7 +100,7 @@ public class ArticleServiceTest {
 
     @DisplayName("게시글 수정")
     @Test
-    public void updateArticle() {
+    public void update() {
         Article article = Article.builder()
                 .id(1L)
                 .authorName("test")
@@ -119,24 +115,17 @@ public class ArticleServiceTest {
 
         when(articleRepository.findById(1L)).thenReturn(Optional.of(article));
 
-        ArticleDto result = articleService.update(requestDto);
+        ArticleDto responseDto = articleService.update(1L, requestDto);
 
-        assertThat(result.getContent()).isEqualTo("after");
+        assertThat(responseDto.getContent()).isEqualTo("after");
         verify(articleRepository, times(1)).findById(eq(1L));
     }
 
     @DisplayName("게시글 삭제")
     @Test
-    public void deleteArticle() {
-        Article artilce = Article.builder()
-                .id(1L)
-                .authorName("Doe")
-                .content("Delete")
-                .build();
-        articleRepository.save(artilce);
+    public void delete() {
         articleService.deleteById(1L);
 
-        verify(articleRepository, times(1))
-                .deleteById(eq(1L));
+        verify(articleRepository, times(1)).deleteById(eq(1L));
     }
 }

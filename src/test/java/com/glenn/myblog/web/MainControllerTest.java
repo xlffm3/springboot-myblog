@@ -21,18 +21,18 @@ public class MainControllerTest {
     @DisplayName("게시글 작성 페이지로 이동")
     @Test
     public void moveToWritingPage() {
-        webTestClient.method(HttpMethod.GET)
-                .uri("/writing")
-                .exchange()
-                .expectStatus()
-                .isOk();
+        isStatusOk(HttpMethod.GET, "/writing");
     }
 
     @DisplayName("메인 페이지로 이동")
     @Test
-    public void getAllArticles() {
-        webTestClient.method(HttpMethod.GET)
-                .uri("/")
+    public void moveToIndexPage() {
+        isStatusOk(HttpMethod.GET, "/");
+    }
+
+    private void isStatusOk(HttpMethod httpMethod, String uri) {
+        webTestClient.method(httpMethod)
+                .uri(uri)
                 .exchange()
                 .expectStatus()
                 .isOk();

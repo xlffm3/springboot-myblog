@@ -20,8 +20,7 @@ public class ArticleDto {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
-    public ArticleDto(Long id, String authorName, String content) {
-        this.id = id;
+    public ArticleDto(String authorName, String content) {
         this.authorName = authorName;
         this.content = content;
     }

@@ -34,15 +34,14 @@ public class ArticleService {
         return ArticleDto.of(articleRepository.save(article));
     }
 
-    public void deleteById(Long id) {
-        articleRepository.deleteById(id);
-    }
-
-    public ArticleDto update(ArticleDto articleRequestDto) {
-        Long id = articleRequestDto.getId();
+    public ArticleDto update(Long id, ArticleDto articleRequestDto) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new ArticleNotFoundException(id));
         article.update(articleRequestDto.getAuthorName(), articleRequestDto.getContent());
         return ArticleDto.of(article);
+    }
+
+    public void deleteById(Long id) {
+        articleRepository.deleteById(id);
     }
 }
