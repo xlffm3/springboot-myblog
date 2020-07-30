@@ -16,21 +16,33 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
 
-    public List<ArticleDto> getAllArticles() {
+    public List<ArticleDto> findAll() {
         return articleRepository.findAll()
                 .stream()
                 .map(ArticleDto::of)
                 .collect(Collectors.toList());
     }
 
-    public ArticleDto getDetailArticle(Long id) {
+    public ArticleDto findById(Long id) {
         return articleRepository.findById(id)
                 .map(ArticleDto::of)
                 .orElseThrow(() -> new ArticleNotFoundException(id));
     }
 
-    public ArticleDto createArticle(ArticleDto articleRequestDto) {
+    public ArticleDto save(ArticleDto articleRequestDto) {
         Article article = articleRequestDto.toEntity();
         return ArticleDto.of(articleRepository.save(article));
+    }
+
+    public void deleteById(Long id) {
+        articleRepository.deleteById(id);
+    }
+
+    public ArticleDto update(ArticleDto articleRequestDto) {
+        Long id = articleRequestDto.getId();
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new ArticleNotFoundException(id));
+        article.update(articleRequestDto.getAuthorName(), articleRequestDto.getContent());
+        return ArticleDto.of(article);
     }
 }

@@ -28,4 +28,9 @@ public class Article {
     private LocalDateTime createdDate;
     @LastModifiedDate
     private LocalDateTime modifiedDate;
+
+    public void update(String authorName, String content) {
+        this.authorName = authorName;
+        this.content = content;
+    }
 }

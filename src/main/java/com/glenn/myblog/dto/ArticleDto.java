@@ -1,13 +1,17 @@
 package com.glenn.myblog.dto;
 
 import com.glenn.myblog.domain.entity.Article;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ArticleDto {
 
     private Long id;
@@ -15,6 +19,12 @@ public class ArticleDto {
     private String content;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
+
+    public ArticleDto(Long id, String authorName, String content) {
+        this.id = id;
+        this.authorName = authorName;
+        this.content = content;
+    }
 
     public static ArticleDto of(Article entity) {
         return ArticleDto.builder()
