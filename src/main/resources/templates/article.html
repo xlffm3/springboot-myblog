@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
-
+<div th:if="${not #strings.isEmpty(article)}">
+    <td th:text="${article.authorName}"></td>
+    <td th:text="${article.content}"></td>
+</div>
 </body>
 </html>

@@ -1,5 +1,6 @@
 package com.glenn.myblog.web;
 
+import com.glenn.myblog.dto.ArticleDto;
 import com.glenn.myblog.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -13,7 +14,8 @@ public class MainController {
     private final ArticleService articleService;
 
     @GetMapping("/writing")
-    public String moveToWritingPage() {
+    public String moveToWritingPage(Model model) {
+        model.addAttribute("articleDto", new ArticleDto());
         return "article-edit";
     }
 

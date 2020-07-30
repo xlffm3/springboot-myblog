@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequiredArgsConstructor
 @RequestMapping("/articles")
@@ -14,9 +15,16 @@ public class ArticleController {
 
     private final ArticleService articleService;
 
-    @PostMapping("")
-    public String createArticle(@ModelAttribute ArticleDto articleRequestDto, Model model) {
+    @PostMapping
+    public String createArticle(@ModelAttribute ArticleDto articleRequestDto,
+                                RedirectAttributes redirectAttributes) {
         ArticleDto articleResponseDto = articleService.save(articleRequestDto);
+        redirectAttributes.addFlashAttribute(articleResponseDto);
+        return "redirect:/articles/creation";
+    }
+
+    @GetMapping("/creation")
+    public String moveToArticlePage(Model model, @ModelAttribute ArticleDto articleResponseDto) {
         model.addAttribute("article", articleResponseDto);
         return "article";
     }
