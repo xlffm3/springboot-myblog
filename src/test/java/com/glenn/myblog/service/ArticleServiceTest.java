@@ -103,12 +103,14 @@ public class ArticleServiceTest {
     public void update() {
         Article article = Article.builder()
                 .id(1L)
+                .title("aaa")
                 .authorName("test")
                 .content("before")
                 .build();
 
         ArticleDto requestDto = ArticleDto.builder()
                 .id(1L)
+                .title("aaa")
                 .authorName("test")
                 .content("after")
                 .build();

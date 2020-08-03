@@ -1,14 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<div th:if="${not #strings.isEmpty(article)}">
-    <td th:text="${article.authorName}"></td>
-    <td th:text="${article.content}"></td>
+<html lang="en" layout:decorator="layout/defaultLayout"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<body layout:fragment="body">
+<div class="container">
+    <h1>Article</h1>
+    <br>
+    <div class="col-md-6">
+        <div th:if="${not #strings.isEmpty(article)}">
+            <h2 th:text="${article.title}"></h2>
+            <hr>
+            <div class="text-right">
+                <p th:text="${article.authorName}"></p>
+                <p th:text="${article.modifiedDate}"></p>
+            </div>
+            <p th:text="${article.content}"></p>
+            <hr>
+            <br>
+        </div>
+        <form method="post" th:action="@{'/articles/' + ${article.id}}">
+            <a class="btn btn-secondary" href="/" role="button">Back</a>
+            <a class="btn btn-primary" th:href="@{'/articles/' + ${article.id} + '/edit'}">Edit</a>
+            <input name="_method" type="hidden" value="delete">
+            <button class="btn btn-primary" type="submit">Delete</button>
+        </form>
+    </div>
 </div>
 </body>
 </html>

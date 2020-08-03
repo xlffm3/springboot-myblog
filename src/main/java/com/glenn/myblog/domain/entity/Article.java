@@ -22,14 +22,18 @@ public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String authorName;
+    @Column(length = 500, nullable = false)
+    private String title;
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
+    private String authorName;
     @CreatedDate
     private LocalDateTime createdDate;
     @LastModifiedDate
     private LocalDateTime modifiedDate;
 
-    public void update(String authorName, String content) {
+    public void update(String title, String authorName, String content) {
+        this.title = title;
         this.authorName = authorName;
         this.content = content;
     }

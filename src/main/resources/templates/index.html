@@ -4,37 +4,33 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       xmlns:th="http://www.thymeleaf.org">
 <body layout:fragment="body">
-<h1>My Blog</h1>
-<br>
-<table class="table table-horizontal table-bordered">
-    <thead class="thead-strong">
-    <tr>
-        <th>게시글 번호</th>
-        <th>제목</th>
-        <th>작성자</th>
-        <th>최종 수정일</th>
-    </tr>
-    </thead>
-    <tbody id="tbody">
-    <li th:if="${not #strings.isEmpty(articles)}">
-        <tr th:each="article : ${articles}">
+<div class="container">
+    <h1>My Blog</h1>
+    <br>
+    <table class="table table-hover table-bordered">
+        <thead class="thead-strong">
+        <tr>
+            <th>Index</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Last Modified Date</th>
+        </tr>
+        </thead>
+        <tbody id="tbody" th:if="${not #strings.isEmpty(articles)}">
+        <tr th:each="article : ${articles}"
+            th:onclick="'window.location.href= \'' + @{/articles/{id}(id=${article.id})} + '\''">
             <td th:text="${article.id}"></td>
+            <td th:text="${article.title}"></td>
             <td th:text="${article.authorName}"></td>
-            <td th:text="${article.content}"></td>
             <td th:text="${article.createdDate}"></td>
         </tr>
-    </li>
-    <p th:if="${#strings.isEmpty(articles)}">Article이 존재하지 않습니다.</p>
-    </tbody>
-
-    <div class="row">
-        <div class="col-md-6">
-            <a class="btn btn-primary" href="/writing" role="button">
-                글 등록
-            </a>
-        </div>
+        </tbody>
+    </table>
+    <div class="row col-md-6">
+        <a class="btn btn-primary" href="/writing" role="button">
+            Write
+        </a>
     </div>
-</table>
-<th:if></th:if>
+</div>
 </body>
 </html>

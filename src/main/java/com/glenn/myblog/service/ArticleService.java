@@ -37,7 +37,7 @@ public class ArticleService {
     public ArticleDto update(Long id, ArticleDto articleRequestDto) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new ArticleNotFoundException(id));
-        article.update(articleRequestDto.getAuthorName(), articleRequestDto.getContent());
+        article.update(articleRequestDto.getTitle(), articleRequestDto.getAuthorName(), articleRequestDto.getContent());
         return ArticleDto.of(article);
     }
 

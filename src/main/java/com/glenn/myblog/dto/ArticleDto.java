@@ -13,16 +13,18 @@ import java.time.LocalDateTime;
 public class ArticleDto {
 
     private Long id;
-    private String authorName;
+    private String title;
     private String content;
+    private String authorName;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
     public static ArticleDto of(Article entity) {
         return ArticleDto.builder()
                 .id(entity.getId())
-                .authorName(entity.getAuthorName())
+                .title(entity.getTitle())
                 .content(entity.getContent())
+                .authorName(entity.getAuthorName())
                 .createdDate(entity.getCreatedDate())
                 .modifiedDate(entity.getModifiedDate())
                 .build();
@@ -30,9 +32,9 @@ public class ArticleDto {
 
     public Article toEntity() {
         return Article.builder()
-                .id(id)
-                .authorName(authorName)
+                .title(title)
                 .content(content)
+                .authorName(authorName)
                 .build();
     }
 }

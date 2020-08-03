@@ -35,6 +35,7 @@ public class ArticleRepositoryTest {
         LocalDateTime localDateTime = LocalDateTime.now();
 
         testEntityManager.persist(Article.builder()
+                .title("title")
                 .authorName("Tester")
                 .content("Test")
                 .build());

@@ -1,16 +1,37 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<h1>Writing Your Post</h1>
-
-<form action="#" method="post" th:action="@{/articles}" th:object="${articleDto}">
-    <input th:field="*{authorName}" type="text">
-    <input th:field="*{content}" type="text">
-    <input type="submit" value="submit">
-</form>
+<html lang="en" layout:decorator="layout/defaultLayout"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<body layout:fragment="body">
+<div class="container">
+    <h1>Write Article</h1>
+    <br>
+    <div class="col-md-6">
+        <form accept-charset="UTF-8" method="post"
+              th:action="${article} == null ? '/articles' : '/articles/' + ${article.id}">
+            <input name="_method" th:value="${article} == null ? 'POST' : 'PUT'" type="hidden"/>
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input class="form-control" id="title" name="title"
+                       placeholder="제목을 입력하세요." th:value="${article} == null ? '' : ${article.title}" type="text">
+            </div>
+            <div class="form-group">
+                <label for="author">Author</label>
+                <input class="form-control" id="author" name="authorName"
+                       placeholder="작성자를 입력하세요." th:value="${article} == null ? '' : ${article.authorName}" type="text">
+            </div>
+            <div class="form-group">
+                <label for="content">Content</label>
+                <textarea class="form-control" id="content" name="content"
+                          placeholder="내용을 입력하세요."
+                          style="height: 200px;"
+                          th:text="${article} == null ? '' : ${article.content}"></textarea>
+            </div>
+            <button class="btn btn-primary" type="submit">Write</button>
+            <a class="btn btn-secondary" href="/" role="button">Cancel</a>
+        </form>
+    </div>
+</div>
 </body>
 </html>

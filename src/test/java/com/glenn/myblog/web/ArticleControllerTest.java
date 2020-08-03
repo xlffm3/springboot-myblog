@@ -12,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
-import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureWebTestClient
@@ -25,14 +24,16 @@ public class ArticleControllerTest {
     @DisplayName("게시글 작성")
     @BeforeEach
     public void createArticle() {
-        String inputJson = "{\"authorName\":\"tester\", \"content\":\"test\"}";
         webTestClient.method(HttpMethod.POST)
                 .uri("/articles")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(inputJson), String.class)
+                .body(BodyInserters
+                        .fromFormData("title", "title")
+                        .with("authorName", "tester")
+                        .with("content", "test content"))
                 .exchange()
                 .expectStatus()
-                .isOk();
+                .is3xxRedirection();
     }
 
     @DisplayName("게시글 조회")
@@ -54,7 +55,8 @@ public class ArticleControllerTest {
                 .uri("/articles/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters
-                        .fromFormData("authorName", "tester")
+                        .fromFormData("title", "test")
+                        .with("authorName", "tester")
                         .with("content", "updated"))
                 .exchange()
                 .expectStatus()
