@@ -6,11 +6,13 @@ import com.glenn.myblog.domain.repository.ArticleRepository;
 import com.glenn.myblog.dto.ArticleDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@Transactional
 @Service
 public class ArticleService {
 

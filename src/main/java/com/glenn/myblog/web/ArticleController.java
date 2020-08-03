@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @RequiredArgsConstructor
 @RequestMapping("/articles")
@@ -16,17 +15,9 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @PostMapping
-    public String createArticle(@ModelAttribute ArticleDto articleRequestDto,
-                                RedirectAttributes redirectAttributes) {
+    public String createArticle(@ModelAttribute ArticleDto articleRequestDto) {
         ArticleDto articleResponseDto = articleService.save(articleRequestDto);
-        redirectAttributes.addFlashAttribute(articleResponseDto);
-        return "redirect:/articles/creation";
-    }
-
-    @GetMapping("/creation")
-    public String moveToArticlePage(Model model, @ModelAttribute ArticleDto articleResponseDto) {
-        model.addAttribute("article", articleResponseDto);
-        return "article";
+        return String.format("redirect:/articles/%d", articleResponseDto.getId());
     }
 
     @GetMapping("/{id}")
@@ -36,23 +27,22 @@ public class ArticleController {
         return "article";
     }
 
-    @GetMapping("/{id}/edit")
-    public String moveToEditPage(@PathVariable("id") Long id, Model model) {
-        ArticleDto articleResponseDto = articleService.findById(id);
-        model.addAttribute("article", articleResponseDto);
-        return "article-edit";
-    }
-
     @PutMapping("/{id}")
-    public String updateArticle(@PathVariable("id") Long id, @ModelAttribute ArticleDto articleRequestDto, Model model) {
-        ArticleDto articleResponseDto = articleService.update(id, articleRequestDto);
-        model.addAttribute("article", articleResponseDto);
-        return "article";
+    public String updateArticle(@PathVariable("id") Long id, @ModelAttribute ArticleDto articleRequestDto) {
+        articleService.update(id, articleRequestDto);
+        return String.format("redirect:/articles/%d", id);
     }
 
     @DeleteMapping("/{id}")
     public String deleteArticle(@PathVariable("id") Long id) {
         articleService.deleteById(id);
-        return "index";
+        return "redirect:/";
+    }
+
+    @GetMapping("/{id}/edit")
+    public String moveToEditPage(@PathVariable("id") Long id, Model model) {
+        ArticleDto articleResponseDto = articleService.findById(id);
+        model.addAttribute("article", articleResponseDto);
+        return "article-edit";
     }
 }
