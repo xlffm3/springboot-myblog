@@ -3,6 +3,7 @@ package com.glenn.myblog.dto;
 import com.glenn.myblog.domain.entity.Article;
 import lombok.*;
 
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Getter
@@ -13,9 +14,12 @@ import java.time.LocalDateTime;
 public class ArticleDto {
 
     private Long id;
+    @NotBlank
     private String title;
-    private String content;
+    @NotBlank
     private String authorName;
+    @NotBlank
+    private String content;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 

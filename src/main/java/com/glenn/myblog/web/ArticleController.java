@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RequiredArgsConstructor
 @RequestMapping("/articles")
 @Controller
@@ -15,7 +17,7 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @PostMapping
-    public String createArticle(@ModelAttribute ArticleDto articleRequestDto) {
+    public String createArticle(@Valid @ModelAttribute ArticleDto articleRequestDto) {
         ArticleDto articleResponseDto = articleService.save(articleRequestDto);
         return String.format("redirect:/articles/%d", articleResponseDto.getId());
     }
@@ -28,7 +30,7 @@ public class ArticleController {
     }
 
     @PutMapping("/{id}")
-    public String updateArticle(@PathVariable("id") Long id, @ModelAttribute ArticleDto articleRequestDto) {
+    public String updateArticle(@PathVariable("id") Long id, @ModelAttribute @Valid ArticleDto articleRequestDto) {
         articleService.update(id, articleRequestDto);
         return String.format("redirect:/articles/%d", id);
     }
