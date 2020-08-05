@@ -9,12 +9,11 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.reactive.server.StatusAssertions;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
-@ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -28,11 +27,11 @@ public class ArticleControllerTest {
     public void createArticle() {
         webTestClient.method(HttpMethod.POST)
                 .uri("/articles")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters
-                        .fromFormData("title", "title")
+                        .fromFormData("title", "sampletitle")
                         .with("authorName", "tester")
-                        .with("content", "test content"))
+                        .with("content", "testcontent"))
                 .exchange()
                 .expectStatus()
                 .is3xxRedirection();
@@ -41,13 +40,15 @@ public class ArticleControllerTest {
     @DisplayName("게시글 조회")
     @Test
     public void readArticle() {
-        isStatusOk(HttpMethod.GET, "/articles/1");
+        expectStatus(HttpMethod.GET, "/articles/1")
+                .isOk();
     }
 
     @DisplayName("게시글 수정 페이지로 이동")
     @Test
     public void moveToArticleEditPage() {
-        isStatusOk(HttpMethod.GET, "/articles/1/edit");
+        expectStatus(HttpMethod.GET, "/articles/1/edit")
+                .isOk();
     }
 
     @DisplayName("게시글 수정")
@@ -55,7 +56,7 @@ public class ArticleControllerTest {
     public void updateArticle() {
         webTestClient.method(HttpMethod.PUT)
                 .uri("/articles/1")
-                .contentType(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters
                         .fromFormData("title", "test")
                         .with("authorName", "tester")
@@ -69,14 +70,14 @@ public class ArticleControllerTest {
     @Test
     public void deleteArticle() {
         createArticle();
-        isStatusOk(HttpMethod.DELETE, "/articles/2");
+        expectStatus(HttpMethod.DELETE, "/articles/2")
+                .is3xxRedirection();
     }
 
-    private void isStatusOk(HttpMethod httpMethod, String uri) {
-        webTestClient.method(httpMethod)
+    private StatusAssertions expectStatus(HttpMethod httpMethod, String uri) {
+        return webTestClient.method(httpMethod)
                 .uri(uri)
                 .exchange()
-                .expectStatus()
-                .isOk();
+                .expectStatus();
     }
 }

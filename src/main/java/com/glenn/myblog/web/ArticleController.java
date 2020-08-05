@@ -5,6 +5,7 @@ import com.glenn.myblog.service.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -17,7 +18,13 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @PostMapping
-    public String createArticle(@Valid @ModelAttribute ArticleDto articleRequestDto) {
+    public String createArticle(@Valid @ModelAttribute ArticleDto articleRequestDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            System.out.println("debug");
+            System.out.println(articleRequestDto.getTitle());
+            System.out.println(articleRequestDto.getContent());
+            System.out.println(articleRequestDto.getContent());
+        }
         ArticleDto articleResponseDto = articleService.save(articleRequestDto);
         return String.format("redirect:/articles/%d", articleResponseDto.getId());
     }
@@ -30,7 +37,7 @@ public class ArticleController {
     }
 
     @PutMapping("/{id}")
-    public String updateArticle(@PathVariable("id") Long id, @ModelAttribute @Valid ArticleDto articleRequestDto) {
+    public String updateArticle(@PathVariable("id") Long id, @Valid @ModelAttribute ArticleDto articleRequestDto) {
         articleService.update(id, articleRequestDto);
         return String.format("redirect:/articles/%d", id);
     }
