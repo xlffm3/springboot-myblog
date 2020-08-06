@@ -1,7 +1,7 @@
 package com.glenn.myblog.service;
 
 import com.glenn.myblog.domain.entity.User;
-import com.glenn.myblog.domain.exception.DuplicateUserEmailException;
+import com.glenn.myblog.domain.exception.DuplicatedUserEmailException;
 import com.glenn.myblog.domain.repository.UserRepository;
 import com.glenn.myblog.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +38,10 @@ public class UserService {
     }
 
     private void validateEmailDuplication(UserDto userDto) {
-        userRepository.findByEmail(userDto.getEmail())
+        String email = userDto.getEmail();
+        userRepository.findByEmail(email)
                 .ifPresent(user -> {
-                    throw new DuplicateUserEmailException();
+                    throw new DuplicatedUserEmailException(email);
                 });
     }
 }

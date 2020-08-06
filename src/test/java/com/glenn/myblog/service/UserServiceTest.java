@@ -1,7 +1,7 @@
 package com.glenn.myblog.service;
 
 import com.glenn.myblog.domain.entity.User;
-import com.glenn.myblog.domain.exception.DuplicateUserEmailException;
+import com.glenn.myblog.domain.exception.DuplicatedUserEmailException;
 import com.glenn.myblog.domain.repository.UserRepository;
 import com.glenn.myblog.dto.UserDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -94,7 +94,7 @@ public class UserServiceTest {
 
         assertThatThrownBy(() -> {
             userService.save(userDto);
-        }).isInstanceOf(DuplicateUserEmailException.class);
+        }).isInstanceOf(DuplicatedUserEmailException.class);
 
         verify(userRepository, times(1)).findByEmail(eq("tester@gmail.com"));
         verify(userRepository, never()).save(any());
