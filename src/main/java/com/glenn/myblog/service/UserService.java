@@ -7,6 +7,7 @@ import com.glenn.myblog.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,6 +31,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public UserDto save(UserDto userDto) {
         validateEmailDuplication(userDto);
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());

@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-@Transactional
 @Service
 public class ArticleService {
 
@@ -31,11 +30,13 @@ public class ArticleService {
                 .orElseThrow(() -> new ArticleNotFoundException(id));
     }
 
+    @Transactional
     public ArticleDto save(ArticleDto articleRequestDto) {
         Article article = articleRequestDto.toEntity();
         return ArticleDto.of(articleRepository.save(article));
     }
 
+    @Transactional
     public ArticleDto update(Long id, ArticleDto articleRequestDto) {
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new ArticleNotFoundException(id));
@@ -43,6 +44,7 @@ public class ArticleService {
         return ArticleDto.of(article);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         articleRepository.deleteById(id);
     }
