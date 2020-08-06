@@ -12,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,6 +35,20 @@ public class UserServiceTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
+    }
+
+    @DisplayName("회원 목록 조회")
+    @Test
+    public void findAll() {
+        List<User> users =
+                Arrays.asList(User.builder().name("tester").email("tester@naver.com").password("encoded").build());
+
+        when(userRepository.findAll()).thenReturn(users);
+
+        List<UserDto> userDtos = userService.findAll();
+        UserDto userDto = userDtos.get(0);
+        assertThat(userDto.getName()).isEqualTo("tester");
+        assertThat(userDto.getPassword()).isNull();
     }
 
     @DisplayName("회원 정상 생성")

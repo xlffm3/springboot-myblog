@@ -90,4 +90,79 @@ public class UserControllerTest {
                 .expectStatus()
                 .isBadRequest();
     }
+
+    @DisplayName("비밀번호는 8자 이상의 소문자, 대문자, 숫자, 특수 문자의 조합이다")
+    @Test
+    public void createUserWhenPasswordInvalid() {
+        webTestClient.post()
+                .uri("/users")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData("name", "tester")
+                        .with("password", "aBcde!2") //조건 충족 but 8자가 아닐때
+                        .with("email", "tester23@gmail.com"))
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
+
+        webTestClient.post()
+                .uri("/users")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData("name", "tester")
+                        .with("password", "ABCD!123") //소문자가 없을때
+                        .with("email", "tester23@gmail.com"))
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
+
+        webTestClient.post()
+                .uri("/users")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData("name", "tester")
+                        .with("password", "abcd!123") //대문자가 없을때
+                        .with("email", "tester23@gmail.com"))
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
+
+        webTestClient.post()
+                .uri("/users")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData("name", "tester")
+                        .with("password", "abcde123") //특수문자가 없을때
+                        .with("email", "tester23@gmail.com"))
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
+
+        webTestClient.post()
+                .uri("/users")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData("name", "tester")
+                        .with("password", "abcdefghi") //숫자가 없을때
+                        .with("email", "tester23@gmail.com"))
+                .exchange()
+                .expectStatus()
+                .isBadRequest();
+
+        webTestClient.post()
+                .uri("/users")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData("name", "tester")
+                        .with("password", "abcCe!123") //정상
+                        .with("email", "tester23@gmail.com"))
+                .exchange()
+                .expectStatus()
+                .is3xxRedirection();
+    }
+
+
+    @DisplayName("회원 목록 페이지로 이동")
+    @Test
+    public void moveToUserListPage() {
+        webTestClient.get()
+                .uri("/users")
+                .exchange()
+                .expectStatus()
+                .isOk();
+    }
 }
