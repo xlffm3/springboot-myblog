@@ -39,6 +39,7 @@ public class ArticleRepositoryTest {
                 .authorName("Tester")
                 .content("Test")
                 .build());
+
         Article article = articleRepository.findById(1L)
                 .orElse(null);
 

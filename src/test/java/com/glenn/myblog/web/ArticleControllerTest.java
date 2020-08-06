@@ -22,7 +22,7 @@ public class ArticleControllerTest {
     @Autowired
     private WebTestClient webTestClient;
 
-    @DisplayName("게시글 작성")
+    @DisplayName("테스트 게시글 작성")
     @BeforeEach
     public void createArticle() {
         webTestClient.method(HttpMethod.POST)
@@ -69,8 +69,7 @@ public class ArticleControllerTest {
     @DisplayName("게시글 삭제")
     @Test
     public void deleteArticle() {
-        createArticle();
-        expectStatus(HttpMethod.DELETE, "/articles/2")
+        expectStatus(HttpMethod.DELETE, "/articles/1")
                 .is3xxRedirection();
     }
 

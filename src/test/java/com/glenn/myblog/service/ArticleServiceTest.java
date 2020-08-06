@@ -27,6 +27,13 @@ public class ArticleServiceTest {
     @Mock
     private ArticleRepository articleRepository;
 
+    private Article article = Article.builder()
+            .id(1L)
+            .title("test article")
+            .authorName("tester")
+            .content("test content")
+            .build();
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -35,38 +42,28 @@ public class ArticleServiceTest {
     @DisplayName("게시글 전체 조회")
     @Test
     public void findAll() {
-        List<Article> articles = Arrays.asList(Article.builder()
-                .id(1L)
-                .authorName("Tester")
-                .content("test")
-                .build());
+        List<Article> articles = Arrays.asList(article);
 
         when(articleRepository.findAll()).thenReturn(articles);
 
         List<ArticleDto> articleDtos = articleService.findAll();
         ArticleDto articleDto = articleDtos.get(0);
 
-        assertThat(articleDto.getAuthorName()).isEqualTo("Tester");
-        assertThat(articleDto.getContent()).isEqualTo("test");
+        assertThat(articleDto.getAuthorName()).isEqualTo("tester");
+        assertThat(articleDto.getContent()).isEqualTo("test content");
         verify(articleRepository, times(1)).findAll();
     }
 
     @DisplayName("ID로 특정 게시글 조회")
     @Test
     public void findById() {
-        Article article = Article.builder()
-                .id(300L)
-                .authorName("Tester")
-                .content("test")
-                .build();
+        when(articleRepository.findById(1L)).thenReturn(Optional.of(article));
 
-        when(articleRepository.findById(300L)).thenReturn(Optional.of(article));
+        ArticleDto articleDto = articleService.findById(1L);
 
-        ArticleDto articleDto = articleService.findById(300L);
-
-        assertThat(articleDto.getAuthorName()).isEqualTo("Tester");
-        assertThat(articleDto.getContent()).isEqualTo("test");
-        verify(articleRepository, times(1)).findById(eq(300L));
+        assertThat(articleDto.getAuthorName()).isEqualTo("tester");
+        assertThat(articleDto.getContent()).isEqualTo("test content");
+        verify(articleRepository, times(1)).findById(eq(1L));
     }
 
     @DisplayName("없는 ID로 특정 게시글 조회 시도시 예외 발생")
@@ -83,35 +80,22 @@ public class ArticleServiceTest {
     @DisplayName("게시글 생성")
     @Test
     public void save() {
-        Article article = Article.builder()
-                .id(1L)
-                .authorName("Doe")
-                .content("New")
-                .build();
-
         when(articleRepository.save(any())).thenReturn(article);
 
         ArticleDto articleRequestDto = ArticleDto.of(article);
         ArticleDto articleResponseDto = articleService.save(articleRequestDto);
 
-        assertThat(articleResponseDto.getAuthorName()).isEqualTo("Doe");
+        assertThat(articleResponseDto.getAuthorName()).isEqualTo("tester");
         verify(articleRepository, times(1)).save(any());
     }
 
     @DisplayName("게시글 수정")
     @Test
     public void update() {
-        Article article = Article.builder()
-                .id(1L)
-                .title("aaa")
-                .authorName("test")
-                .content("before")
-                .build();
-
         ArticleDto requestDto = ArticleDto.builder()
                 .id(1L)
-                .title("aaa")
-                .authorName("test")
+                .title("test article")
+                .authorName("tester")
                 .content("after")
                 .build();
 

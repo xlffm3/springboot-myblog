@@ -17,7 +17,7 @@ public class MainController {
         model.addAttribute("articles", articleService.findAll());
         return "index";
     }
-    
+
     @GetMapping("/writing")
     public String moveToWritingPage() {
         return "article-edit";

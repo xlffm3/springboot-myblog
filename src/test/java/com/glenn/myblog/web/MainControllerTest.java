@@ -18,16 +18,16 @@ public class MainControllerTest {
     @Autowired
     private WebTestClient webTestClient;
 
-    @DisplayName("게시글 작성 페이지로 이동")
-    @Test
-    public void moveToWritingPage() {
-        isStatusOk(HttpMethod.GET, "/writing");
-    }
-
     @DisplayName("메인 페이지로 이동")
     @Test
     public void moveToIndexPage() {
         isStatusOk(HttpMethod.GET, "/");
+    }
+
+    @DisplayName("게시글 작성 페이지로 이동")
+    @Test
+    public void moveToWritingPage() {
+        isStatusOk(HttpMethod.GET, "/writing");
     }
 
     private void isStatusOk(HttpMethod httpMethod, String uri) {
