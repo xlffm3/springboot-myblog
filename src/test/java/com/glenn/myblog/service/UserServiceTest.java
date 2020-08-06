@@ -32,71 +32,62 @@ public class UserServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    private User user = User.builder()
+            .name("tester")
+            .email("tester@naver.com")
+            .password("abcDE!123")
+            .build();
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
     }
 
-    @DisplayName("회원 목록 조회")
+    @DisplayName("회원 목록 조회를 하나, 패스워드는 생략함")
     @Test
     public void findAll() {
-        List<User> users =
-                Arrays.asList(User.builder().name("tester").email("tester@naver.com").password("encoded").build());
+        List<User> users = Arrays.asList(user);
 
         when(userRepository.findAll()).thenReturn(users);
 
         List<UserDto> userDtos = userService.findAll();
         UserDto userDto = userDtos.get(0);
+
         assertThat(userDto.getName()).isEqualTo("tester");
         assertThat(userDto.getPassword()).isNull();
     }
 
-    @DisplayName("회원 정상 생성")
+    @DisplayName("회원 생성")
     @Test
     public void save() {
+        when(userRepository.save(any())).thenReturn(user);
+
         UserDto userDto = UserDto.builder()
-                .name("json")
-                .email("tester@gmail.com")
-                .password("dkansk")
+                .name("tester")
+                .email("tester@naver.com")
+                .password("abcDE!123")
                 .build();
-
-        User user = User.builder()
-                .name("json")
-                .email("tester@gmail.com")
-                .build();
-
-        when(userRepository.save(any()))
-                .thenReturn(user);
         UserDto resultDto = userService.save(userDto);
 
-        assertThat(resultDto.getName()).isEqualTo("json");
-        assertThat(resultDto.getEmail()).isEqualTo("tester@gmail.com");
+        assertThat(resultDto.getName()).isEqualTo("tester");
+        assertThat(resultDto.getEmail()).isEqualTo("tester@naver.com");
         verify(userRepository, times(1)).save(any());
-        verify(passwordEncoder, times(1)).encode(eq("dkansk"));
+        verify(passwordEncoder, times(1)).encode(eq("abcDE!123"));
     }
 
     @DisplayName("이메일 중복 시 회원 생성 불가")
     @Test
-    public void saveWhenDuplicateEmail() {
-        UserDto userDto = UserDto.builder()
-                .name("json")
-                .email("tester@gmail.com")
-                .password("dkansk")
-                .build();
-        User user = User.builder()
-                .name("duplicated")
-                .email("tester@gmail.com")
-                .password("password")
-                .build();
+    public void saveWhenDuplicatedEmail() {
+        UserDto userDto = UserDto.of(user);
 
-        when(userRepository.findByEmail("tester@gmail.com"))
+        when(userRepository.findByEmail("tester@naver.com"))
                 .thenReturn(Optional.of(user));
 
         assertThatThrownBy(() -> {
             userService.save(userDto);
         }).isInstanceOf(DuplicatedUserEmailException.class);
 
-        verify(userRepository, times(1)).findByEmail(eq("tester@gmail.com"));
+        verify(userRepository, times(1)).findByEmail(eq("tester@naver.com"));
         verify(userRepository, never()).save(any());
     }
 }
