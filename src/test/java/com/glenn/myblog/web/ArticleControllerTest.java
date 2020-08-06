@@ -1,5 +1,6 @@
 package com.glenn.myblog.web;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ArticleControllerTest {
+    private static int ARTICLE_ID;
 
     @Autowired
     private WebTestClient webTestClient;
@@ -34,20 +36,33 @@ public class ArticleControllerTest {
                         .with("content", "testcontent"))
                 .exchange()
                 .expectStatus()
+                .is3xxRedirection()
+                .expectBody()
+                .consumeWith(response -> {
+                    String path = response.getResponseHeaders().getLocation().getPath();
+                    int index = path.lastIndexOf("/");
+                    ARTICLE_ID = Integer.parseInt(path.substring(index + 1));
+                });
+    }
+
+    @DisplayName("테스트 게시글 삭제")
+    @AfterEach
+    public void deleteArticle() {
+        expectStatus(HttpMethod.DELETE, "/articles/" + ARTICLE_ID)
                 .is3xxRedirection();
     }
 
     @DisplayName("게시글 조회")
     @Test
     public void readArticle() {
-        expectStatus(HttpMethod.GET, "/articles/1")
+        expectStatus(HttpMethod.GET, "/articles/" + ARTICLE_ID)
                 .isOk();
     }
 
     @DisplayName("게시글 수정 페이지로 이동")
     @Test
     public void moveToArticleEditPage() {
-        expectStatus(HttpMethod.GET, "/articles/1/edit")
+        expectStatus(HttpMethod.GET, "/articles/" + ARTICLE_ID + "/edit")
                 .isOk();
     }
 
@@ -55,7 +70,7 @@ public class ArticleControllerTest {
     @Test
     public void updateArticle() {
         webTestClient.method(HttpMethod.PUT)
-                .uri("/articles/1")
+                .uri("/articles/" + ARTICLE_ID)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters
                         .fromFormData("title", "test")
@@ -63,13 +78,6 @@ public class ArticleControllerTest {
                         .with("content", "updated"))
                 .exchange()
                 .expectStatus()
-                .is3xxRedirection();
-    }
-
-    @DisplayName("게시글 삭제")
-    @Test
-    public void deleteArticle() {
-        expectStatus(HttpMethod.DELETE, "/articles/1")
                 .is3xxRedirection();
     }
 
