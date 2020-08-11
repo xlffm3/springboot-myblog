@@ -1,4 +1,4 @@
-package com.glenn.myblog.web;
+package com.glenn.myblog.web.controller;
 
 import com.glenn.myblog.domain.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -14,9 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.reactive.server.StatusAssertions;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
+
+import static com.glenn.myblog.dto.UserDto.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureWebTestClient
@@ -56,38 +58,61 @@ public class UserControllerTest {
         userRepository.deleteById(USER_ID);
     }
 
-    @DisplayName("Email 양식 오류")
-    @Test
-    public void createUserWhenEmailInvalid() {
-        expectStatus("json", "aBcdEf!123", "wrongemailck")
-                .isBadRequest();
-    }
-
     @DisplayName("Email 중복 예외")
     @Test
     public void createUserWhenEmailDuplicated() {
-        expectStatus("json", "aBcdEf!123", "tester@gmail.com")
-                .isNotFound();
+        webTestClient.post()
+                .uri("/users")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters
+                        .fromFormData("name", "json")
+                        .with("password", "aBcdEf!123")
+                        .with("email", "tester@gmail.com"))
+                .exchange()
+                .expectStatus()
+                .isNotFound()
+                .expectBody()
+                .consumeWith(response -> {
+                    String body = new String(response.getResponseBody());
+                    assertThat(body).contains("There is already same email. (Email : tester@gmail.com)");
+                });
     }
+
+    @DisplayName("Email 양식 오류")
+    @Test
+    public void createUserWhenEmailInvalid() {
+        expectStatus(EMAIL_FORMAT_ERROR, "json", "aBcdEf!123", "wrongemailck");
+    }
+
+    @DisplayName("Email이 비어있는 경우")
+    @Test
+    public void createUserWhenEmailBlank() {
+        expectStatus(EMAIL_BLANK_ERROR, "json", "aBcdEf!123", "");
+    }
+
+    @DisplayName("이름이 2글자 미만인 경우")
+    @Test
+    public void createUserWhenName() {
+        expectStatus(NAME_LENGTH_ERROR, "ab", "aBcdEf!123", "tester23@gmail.com");
+    }
+
 
     @DisplayName("이름 양식 오류")
     @ParameterizedTest
     @ValueSource(strings = {"jkjkjkjkppj", "jkj!k!3"})
     public void createUserWhenNameInvalid(String name) {
-        expectStatus(name, "aBcdEf!123", "tester23@gmail.com")
-                .isBadRequest();
+        expectStatus(NAME_FORMAT_ERROR, name, "aBcdEf!123", "tester23@gmail.com");
     }
 
     @DisplayName("비밀번호 양식 오류")
     @ParameterizedTest
     @ValueSource(strings = {"aBcde!2", "ABCD!123", "abcd!123", "abcde123", "abcdefghi"})
     public void createUserWhenPasswordInvalid(String password) {
-        expectStatus("tester", password, "tester66@gmail.com")
-                .isBadRequest();
+        expectStatus(PASSWORD_FORMAT_ERROR, "tester", password, "tester66@gmail.com");
     }
 
-    private StatusAssertions expectStatus(String name, String password, String email) {
-        return webTestClient.post()
+    private void expectStatus(String errorMessage, String name, String password, String email) {
+        webTestClient.post()
                 .uri("/users")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters
@@ -95,7 +120,13 @@ public class UserControllerTest {
                         .with("password", password)
                         .with("email", email))
                 .exchange()
-                .expectStatus();
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .consumeWith(response -> {
+                    String body = new String(response.getResponseBody());
+                    assertThat(body).contains(errorMessage);
+                });
     }
 
     @DisplayName("회원 목록 페이지로 이동")
@@ -105,6 +136,12 @@ public class UserControllerTest {
                 .uri("/users")
                 .exchange()
                 .expectStatus()
-                .isOk();
+                .isOk()
+                .expectBody()
+                .consumeWith(response -> {
+                    String body = new String(response.getResponseBody());
+                    assertThat(body).contains("tester");
+                    assertThat(body).contains("tester@gmail.com");
+                });
     }
 }

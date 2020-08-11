@@ -20,10 +20,10 @@
             <br>
         </div>
         <form method="post" th:action="@{'/articles/' + ${article.id}}">
-            <a class="btn btn-secondary" href="/" role="button">Back</a>
             <a class="btn btn-primary" th:href="@{'/articles/' + ${article.id} + '/edit'}">Edit</a>
             <input name="_method" type="hidden" value="delete">
-            <button class="btn btn-primary" type="submit">Delete</button>
+            <button class="btn btn-danger" type="submit">Delete</button>
+            <a class="btn btn-secondary" href="/" role="button">Back</a>
         </form>
     </div>
 </div>

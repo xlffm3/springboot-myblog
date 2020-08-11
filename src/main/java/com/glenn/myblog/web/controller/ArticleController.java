@@ -1,4 +1,4 @@
-package com.glenn.myblog.web;
+package com.glenn.myblog.web.controller;
 
 import com.glenn.myblog.dto.ArticleDto;
 import com.glenn.myblog.service.ArticleService;

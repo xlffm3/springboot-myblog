@@ -1,4 +1,4 @@
-package com.glenn.myblog.web;
+package com.glenn.myblog.web.controller;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +28,12 @@ public class MainControllerTest {
     @Test
     public void moveToWritingPage() {
         isStatusOk(HttpMethod.GET, "/writing");
+    }
+
+    @DisplayName("회원가입 페이지로 이동")
+    @Test
+    public void moveToSignUpPage() {
+        isStatusOk(HttpMethod.GET, "/signup");
     }
 
     private void isStatusOk(HttpMethod httpMethod, String uri) {
