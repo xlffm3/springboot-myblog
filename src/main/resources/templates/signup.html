@@ -10,26 +10,36 @@
     <a href="/login">이미 회원이신가요?</a>
     <br><br>
     <div class="col-md-6">
-        <form accept-charset="UTF-8" method="post" th:action="@{/users}" th:object="${userDto}">
-            <input name="_method" type="hidden" value="POST"/>
+        <form accept-charset="UTF-8" id="signup-form" method="post" th:action="@{/users}" th:object="${userDto}">
             <div class="form-group">
                 <label for="name">Name</label>
-                <input class="form-control" id="name" name="name"
-                       placeholder="이름을 입력하세요." type="text">
+                <input autofocus class="form-control" id="name"
+                       name="name" pattern="[a-zA-Z가-힣]{2,10}" placeholder="이름을 입력하세요." required th:field="*{name}"
+                       type="text">
                 <small class="text-danger" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></small>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input class="form-control" id="password" name="password"
-                       placeholder="패스워드를 입력하세요." type="text">
+                <input autofocus class="form-control" id="password"
+                       name="password" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}"
+                       placeholder="패스워드를 입력하세요." required th:field="*{password}" type="text">
                 <small class="text-danger" th:errors="*{password}" th:if="${#fields.hasErrors('password')}"></small>
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
-                <input class="form-control" id="email" name="email" placeholder="이메일을 입력하세요." type="text">
+                <input class="form-control" id="email" name="email" placeholder="이메일을 입력하세요." required type="text">
                 <small class="text-danger" th:errors="*{email}" th:if="${#fields.hasErrors('email')}"></small>
+                <small class="text-danger" id="email-error-message"></small>
             </div>
-            <button class="btn btn-primary" type="submit">Sign Up</button>
+            <div class="form-group">
+                <label for="password-confirm">Confirm Password</label>
+                <input class="form-control" id="password-confirm" name="password-confirm" placeholder="패스워드를 다시 입력하세요."
+                       required type="text">
+                <small class="text-danger" id="password-confirm-miss"></small>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-primary" onclick="confirmPassword()" type="button">Sign Up</button>
+            </div>
             <a class="btn btn-secondary" href="/" role="button">Cancel</a>
         </form>
     </div>
