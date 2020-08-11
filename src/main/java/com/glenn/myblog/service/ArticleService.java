@@ -18,7 +18,7 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
 
     public List<ArticleDto> findAll() {
-        return articleRepository.findAll()
+        return articleRepository.findAllByOrderByIdDesc()
                 .stream()
                 .map(ArticleDto::of)
                 .collect(Collectors.toList());

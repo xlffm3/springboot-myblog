@@ -23,7 +23,7 @@
         <tbody id="tbody" th:if="${not #strings.isEmpty(articles)}">
         <tr th:each="article, index : ${articles}"
             th:onclick="'window.location.href= \'' + @{/articles/{id}(id=${article.id})} + '\''">
-            <td th:text="${index.count}"></td>
+            <td th:text="${articles.size() - index.index}"></td>
             <td th:text="${article.title}"></td>
             <td th:text="${article.authorName}"></td>
             <td th:text="${article.createdDate}"></td>

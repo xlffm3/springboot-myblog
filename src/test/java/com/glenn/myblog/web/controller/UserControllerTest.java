@@ -92,8 +92,8 @@ public class UserControllerTest {
 
     @DisplayName("이름이 2글자 미만인 경우")
     @Test
-    public void createUserWhenName() {
-        expectStatus(NAME_LENGTH_ERROR, "ab", "aBcdEf!123", "tester23@gmail.com");
+    public void createUserWhenNameIsShort() {
+        expectStatus(NAME_LENGTH_ERROR, "a", "aBcdEf!123", "tester23@gmail.com");
     }
 
 

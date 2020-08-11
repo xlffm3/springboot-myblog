@@ -36,6 +36,12 @@ public class MainControllerTest {
         isStatusOk(HttpMethod.GET, "/signup");
     }
 
+    @DisplayName("로그인 페이지로 이동")
+    @Test
+    public void moveToLoginPage() {
+        isStatusOk(HttpMethod.GET, "/login");
+    }
+
     private void isStatusOk(HttpMethod httpMethod, String uri) {
         webTestClient.method(httpMethod)
                 .uri(uri)

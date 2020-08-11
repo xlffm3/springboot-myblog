@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 @RequiredArgsConstructor
 @Controller
@@ -25,8 +26,12 @@ public class MainController {
     }
 
     @GetMapping("/signup")
-    public String moveToSignUpPage(Model model) {
-        model.addAttribute("userDto", UserDto.builder().build());
+    public String moveToSignUpPage(@ModelAttribute UserDto userDto) {
         return "signup";
+    }
+
+    @GetMapping("/login")
+    public String moveToLoginPage() {
+        return "login";
     }
 }

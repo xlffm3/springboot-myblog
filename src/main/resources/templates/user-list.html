@@ -1,10 +1,26 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
+<html lang="en" layout:decorator="layout/defaultLayout"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<body layout:fragment="body">
+<div class="container">
+    <table class="table table-hover table-bordered">
+        <thead class="thead-strong">
+        <tr>
+            <th>Index</th>
+            <th>Name</th>
+            <th>Email</th>
+        </tr>
+        </thead>
+        <tbody id="tbody" th:if="${users} != null">
+        <tr th:each="user, index : ${users}">
+            <td th:text="${index.count}"></td>
+            <td th:text="${user.name}"></td>
+            <td th:text="${user.email}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 </body>
 </html>

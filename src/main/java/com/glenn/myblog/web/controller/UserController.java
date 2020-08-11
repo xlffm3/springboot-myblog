@@ -5,7 +5,6 @@ import com.glenn.myblog.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,10 +26,7 @@ public class UserController {
     }
 
     @PostMapping
-    public String createUser(@Valid @ModelAttribute UserDto userDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "signup";
-        }
+    public String createUser(@Valid @ModelAttribute UserDto userDto) {
         userService.save(userDto);
         return "redirect:/login";
     }
