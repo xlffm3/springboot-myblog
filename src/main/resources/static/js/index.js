@@ -1,11 +1,10 @@
 function confirmPassword() {
-    const firstInputPassword = document.getElementById("password").value;
-    const confirmedInputPassword = document.getElementById("password-confirm").value;
+    const inputPassword = document.getElementById('password').value;
+    const confirmationPassword = document.getElementById('password-confirm').value;
 
-    if (firstInputPassword === confirmedInputPassword) {
-        document.getElementById("signup-form").submit();
-        alert("정상적으로 회원 가입이 완료되었습니다.");
+    if (inputPassword === confirmationPassword) {
+        document.getElementById('signup-form').submit();
     } else {
-        document.getElementById("password-confirm-miss").innerText = "동일한 패스워드를 입력하세요.";
+        document.getElementById('password-confirm-miss').innerText = '패스워드를 정확하게 입력해주세요.';
     }
 }

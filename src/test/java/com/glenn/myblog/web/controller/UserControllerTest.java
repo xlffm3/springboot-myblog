@@ -61,21 +61,7 @@ public class UserControllerTest {
     @DisplayName("Email 중복 예외")
     @Test
     public void createUserWhenEmailDuplicated() {
-        webTestClient.post()
-                .uri("/users")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(BodyInserters
-                        .fromFormData("name", "json")
-                        .with("password", "aBcdEf!123")
-                        .with("email", "tester@gmail.com"))
-                .exchange()
-                .expectStatus()
-                .isNotFound()
-                .expectBody()
-                .consumeWith(response -> {
-                    String body = new String(response.getResponseBody());
-                    assertThat(body).contains("There is already same email. (Email : tester@gmail.com)");
-                });
+        expectStatus("There is already same email. (Email : tester@gmail.com)", "json", "aBcdEf!123", "tester@gmail.com");
     }
 
     @DisplayName("Email 양식 오류")

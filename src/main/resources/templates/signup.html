@@ -10,6 +10,7 @@
     <a href="/login">이미 회원이신가요?</a>
     <br><br>
     <div class="col-md-6">
+        <div class="alert alert-danger" id="email-duplication" role="alert" th:if="${error}" th:text="${message}"></div>
         <form accept-charset="UTF-8" id="signup-form" method="post" th:action="@{/users}" th:object="${userDto}">
             <div class="form-group">
                 <label for="name">Name</label>
@@ -38,7 +39,8 @@
                 <small class="text-danger" id="password-confirm-miss"></small>
             </div>
             <div class="form-group">
-                <button class="btn btn-primary" onclick="confirmPassword()" type="button">Sign Up</button>
+                <button class="btn btn-primary" id="btn-signup" onclick="confirmPassword()" type="button">Sign Up
+                </button>
             </div>
             <a class="btn btn-secondary" href="/" role="button">Cancel</a>
         </form>
