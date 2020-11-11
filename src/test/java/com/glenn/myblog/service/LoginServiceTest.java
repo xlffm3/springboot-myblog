@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 class LoginServiceTest {
@@ -24,6 +25,9 @@ class LoginServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
@@ -33,12 +37,12 @@ class LoginServiceTest {
     public void 정상_로그인() {
         String loginEmail = "k123@gmail.com";
         String loginPassword = "Pass!123";
+        String encryptedPassword = new BCryptPasswordEncoder().encode(loginPassword);
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         User user = User.builder()
                 .name("jipark")
                 .email(loginEmail)
-                .password(passwordEncoder.encode(loginPassword))
+                .password(encryptedPassword)
                 .build();
         LoginDto loginDto = LoginDto.builder()
                 .email(loginEmail)
@@ -46,8 +50,33 @@ class LoginServiceTest {
                 .build();
 
         when(userRepository.findByEmail(loginEmail)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(loginPassword, encryptedPassword)).thenReturn(true);
         LoginDto responseDto = loginService.login(loginDto);
 
         assertThat(responseDto.getName()).isEqualTo("jipark");
+    }
+
+    @Test
+    public void 로그인_실패_패스워드가_다름() {
+        String loginEmail = "k123@gmail.com";
+        String loginPassword = "Pass!123";
+        String encryptedPassword = new BCryptPasswordEncoder().encode(loginPassword);
+
+        User user = User.builder()
+                .name("jipark")
+                .email(loginEmail)
+                .password(encryptedPassword)
+                .build();
+        LoginDto loginDto = LoginDto.builder()
+                .email(loginEmail)
+                .password("WrongPass!123")
+                .build();
+
+        when(userRepository.findByEmail(loginEmail)).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches(loginPassword, encryptedPassword)).thenReturn(false);
+
+        assertThatThrownBy(() -> {
+            loginService.login(loginDto);
+        }).isInstanceOf(IllegalArgumentException.class);
     }
 }
