@@ -55,4 +55,14 @@ class LoginControllerTest {
                 .expectStatus()
                 .is3xxRedirection();
     }
+
+    @DisplayName("정상적으로 로그아웃된다.")
+    @Test
+    public void logoutOk() {
+        webTestClient.method(HttpMethod.GET)
+                .uri("/logout")
+                .exchange()
+                .expectStatus()
+                .is3xxRedirection();
+    }
 }

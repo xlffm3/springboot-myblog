@@ -13,6 +13,7 @@
     </div>
     <div th:if="${not #strings.isEmpty(session.loginDto)}">
         <span th:text="|Name : ${{session.loginDto.getName()}}  Email : ${{session.loginDto.getEmail()}}|"></span>
+        <a class="btn btn-secondary" href="/logout" role="button">Logout</a>
     </div>
     <br>
     <br>

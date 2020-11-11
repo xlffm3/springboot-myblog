@@ -8,8 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import javax.servlet.http.HttpSession;
-
 @RequiredArgsConstructor
 @Controller
 public class MainController {
@@ -17,10 +15,7 @@ public class MainController {
     private final ArticleService articleService;
 
     @GetMapping("/")
-    public String moveToIndexPage(HttpSession httpSession, Model model) {
-        if (httpSession.getAttribute("isLogin") == null) {
-            httpSession.setAttribute("isLogin", false);
-        }
+    public String moveToIndexPage(Model model) {
         model.addAttribute("articles", articleService.findAll());
         return "index";
     }
