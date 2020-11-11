@@ -16,7 +16,7 @@ public class LoginService {
 
     public LoginDto login(LoginDto loginDto) {
         User user = userRepository.findByEmail(loginDto.getEmail())
-                .get();
+                .orElseThrow(IllegalArgumentException::new);
         if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException();
         }

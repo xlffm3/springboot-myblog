@@ -79,4 +79,20 @@ class LoginServiceTest {
             loginService.login(loginDto);
         }).isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    public void 로그인_실패_유저_없음() {
+        String loginEmail = "k123@gmail.com";
+        String loginPassword = "Pass!123";
+
+        LoginDto loginDto = LoginDto.builder()
+                .email(loginEmail)
+                .password(loginPassword)
+                .build();
+        when(userRepository.findByEmail(loginEmail)).thenThrow(IllegalArgumentException.class);
+
+        assertThatThrownBy(() -> {
+            loginService.login(loginDto);
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
 }
