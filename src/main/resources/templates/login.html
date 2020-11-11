@@ -1,10 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-login page~
+<html lang="en" layout:decorator="layout/defaultLayout"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<body layout:fragment="body">
+<div class="container">
+    <h1>Login</h1>
+    <br>
+    <a href="/signup">아이디가 없으신가요?</a>
+    <br><br>
+    <div class="col-md-6">
+        <form accept-charset="UTF-8" id="login-form" method="post" th:action="@{/login}" th:object="${loginDto}">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input class="form-control" id="email" name="email" placeholder="이메일을 입력하세요." required type="text">
+            </div>
+            <div class="form-group">
+                <label for="email">Password</label>
+                <input class="form-control" id="password" name="password" placeholder="비밀번호를 입력하세요." required
+                       type="text">
+            </div>
+        </form>
+        <div class="form-group">
+            <button class="btn btn-primary" id="btn-login" type="button">Login
+            </button>
+        </div>
+        <a class="btn btn-secondary" href="/" role="button">Cancel</a>
+    </div>
+</div>
 </body>
 </html>
