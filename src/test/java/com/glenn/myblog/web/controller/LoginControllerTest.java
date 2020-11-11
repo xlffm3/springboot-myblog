@@ -1,5 +1,9 @@
 package com.glenn.myblog.web.controller;
 
+import com.glenn.myblog.domain.entity.User;
+import com.glenn.myblog.domain.repository.UserRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,13 +23,34 @@ class LoginControllerTest {
     @Autowired
     private WebTestClient webTestClient;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @BeforeEach
+    public void createUser() {
+        webTestClient.method(HttpMethod.POST)
+                .uri("/users")
+                .body(BodyInserters.fromFormData("name", "tester")
+                        .with("email", "springtester@gmail.com")
+                        .with("password", "Password!12"))
+                .exchange()
+                .expectStatus()
+                .is3xxRedirection();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        User user = userRepository.findByEmail("springtester@gmail.com").get();
+        userRepository.delete(user);
+    }
+
     @DisplayName("정상적으로 로그인된다.")
     @Test
     public void loginOk() {
         webTestClient.method(HttpMethod.POST)
                 .uri("/login")
-                .body(BodyInserters.fromFormData("email", "jipark@gmail.com")
-                        .with("password", "Testpass!123"))
+                .body(BodyInserters.fromFormData("email", "springtester@gmail.com")
+                        .with("password", "Password!12"))
                 .exchange()
                 .expectStatus()
                 .is3xxRedirection();
