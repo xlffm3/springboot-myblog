@@ -7,12 +7,12 @@
 <div class="container">
     <h1>My Blog</h1>
     <br>
-    <div th:if="${session.isLogin}">
-        <span th:text="|Name : ${{session.loginDto.getName()}}  Email : ${{session.loginDto.getEmail()}}|"></span>
-    </div>
-    <div th:if="${not session.isLogin}">
+    <div th:if="${#strings.isEmpty(session.loginDto)}">
         <a class="btn btn-secondary" href="/login" role="button">Login</a>
         <a class="btn btn-secondary" href="/signup" role="button">Sign Up</a>
+    </div>
+    <div th:if="${not #strings.isEmpty(session.loginDto)}">
+        <span th:text="|Name : ${{session.loginDto.getName()}}  Email : ${{session.loginDto.getEmail()}}|"></span>
     </div>
     <br>
     <br>

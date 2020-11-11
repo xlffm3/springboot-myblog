@@ -20,7 +20,6 @@ public class LoginController {
     @PostMapping
     public String login(HttpSession httpSession, @ModelAttribute LoginDto loginDto) {
         LoginDto responseDto = loginService.login(loginDto);
-        httpSession.setAttribute("isLogin", true);
         httpSession.setAttribute("loginDto", responseDto);
         return "redirect:/";
     }

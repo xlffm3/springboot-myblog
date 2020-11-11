@@ -44,14 +44,14 @@ public class ArticleServiceTest {
     public void findAll() {
         List<Article> articles = Arrays.asList(article);
 
-        when(articleRepository.findAll()).thenReturn(articles);
+        when(articleRepository.findAllByOrderByIdDesc()).thenReturn(articles);
 
         List<ArticleDto> articleDtos = articleService.findAll();
         ArticleDto articleDto = articleDtos.get(0);
 
         assertThat(articleDto.getAuthorName()).isEqualTo("tester");
         assertThat(articleDto.getContent()).isEqualTo("test content");
-        verify(articleRepository, times(1)).findAll();
+        verify(articleRepository, times(1)).findAllByOrderByIdDesc();
     }
 
     @DisplayName("ID로 특정 게시글 조회")
