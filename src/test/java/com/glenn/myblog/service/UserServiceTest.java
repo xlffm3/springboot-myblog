@@ -2,6 +2,7 @@ package com.glenn.myblog.service;
 
 import com.glenn.myblog.domain.entity.User;
 import com.glenn.myblog.domain.exception.DuplicatedUserEmailException;
+import com.glenn.myblog.domain.exception.WrongPasswordException;
 import com.glenn.myblog.domain.repository.UserRepository;
 import com.glenn.myblog.dto.UserDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -91,11 +92,25 @@ public class UserServiceTest {
         verify(userRepository, never()).save(any());
     }
 
-    @DisplayName("회원 삭제")
+    @DisplayName("회원 삭제 성공")
     @Test
     public void removeUserAccount() {
-        userService.deleteUser(1L);
+        String password = "abcDE!123";
+        when(passwordEncoder.matches(password, "abcDE!123")).thenReturn(true);
+        userService.deleteUser(1L, password);
 
         verify(userRepository, times(1)).deleteById(1L);
+        verify(passwordEncoder, times(1)).matches(password, "abcDE!123");
+    }
+
+    @DisplayName("회원 삭제 실패 : 비밀번호가 다름")
+    @Test
+    public void removeUserAccount_실패() {
+        String password = "wrongpass";
+        when(passwordEncoder.matches(password, "abcDE!123")).thenReturn(false);
+
+        assertThatThrownBy(() -> {
+            userService.deleteUser(1L, password);
+        }).isInstanceOf(WrongPasswordException.class);
     }
 }

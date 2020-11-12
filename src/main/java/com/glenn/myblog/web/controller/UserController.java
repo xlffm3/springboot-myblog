@@ -30,4 +30,10 @@ public class UserController {
         userService.save(userDto);
         return "redirect:/login";
     }
+
+    @GetMapping("/withdraw")
+    public String deleteUser(@ModelAttribute String password) {
+
+        return null;
+    }
 }

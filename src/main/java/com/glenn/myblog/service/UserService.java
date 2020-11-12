@@ -48,7 +48,7 @@ public class UserService {
     }
 
     @Transactional
-    public void deleteUser(Long id) {
+    public void deleteUser(Long id, String password) {
         userRepository.deleteById(id);
     }
 }
