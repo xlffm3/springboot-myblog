@@ -2,6 +2,7 @@ package com.glenn.myblog.service;
 
 import com.glenn.myblog.domain.entity.User;
 import com.glenn.myblog.domain.exception.DuplicatedUserEmailException;
+import com.glenn.myblog.domain.exception.WrongEmailException;
 import com.glenn.myblog.domain.exception.WrongPasswordException;
 import com.glenn.myblog.domain.repository.UserRepository;
 import com.glenn.myblog.dto.UserDto;
@@ -96,10 +97,12 @@ public class UserServiceTest {
     @Test
     public void removeUserAccount() {
         String password = "abcDE!123";
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(password, "abcDE!123")).thenReturn(true);
         userService.deleteUser(1L, password);
 
         verify(userRepository, times(1)).deleteById(1L);
+        verify(userRepository, times(1)).findById(1L);
         verify(passwordEncoder, times(1)).matches(password, "abcDE!123");
     }
 
@@ -107,10 +110,27 @@ public class UserServiceTest {
     @Test
     public void removeUserAccount_실패() {
         String password = "wrongpass";
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(password, "abcDE!123")).thenReturn(false);
 
         assertThatThrownBy(() -> {
             userService.deleteUser(1L, password);
         }).isInstanceOf(WrongPasswordException.class);
+
+        verify(userRepository, times(1)).findById(1L);
+        verify(passwordEncoder, times(1)).matches(password, "abcDE!123");
+    }
+
+    @DisplayName("회원 삭제 실패 : 유저가 없음")
+    @Test
+    public void removeUserAccount_실패_유저_없음() {
+        String password = "wrongpass";
+
+        when(userRepository.findById(2L)).thenThrow(WrongEmailException.class);
+
+        assertThatThrownBy(() -> {
+            userService.deleteUser(2L, password);
+        }).isInstanceOf(WrongEmailException.class);
     }
 }

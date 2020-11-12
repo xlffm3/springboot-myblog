@@ -2,6 +2,8 @@ package com.glenn.myblog.service;
 
 import com.glenn.myblog.domain.entity.User;
 import com.glenn.myblog.domain.exception.DuplicatedUserEmailException;
+import com.glenn.myblog.domain.exception.WrongEmailException;
+import com.glenn.myblog.domain.exception.WrongPasswordException;
 import com.glenn.myblog.domain.repository.UserRepository;
 import com.glenn.myblog.dto.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,11 @@ public class UserService {
 
     @Transactional
     public void deleteUser(Long id, String password) {
+        User user = userRepository.findById(id)
+                .orElseThrow(WrongEmailException::new);
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new WrongPasswordException();
+        }
         userRepository.deleteById(id);
     }
 }
