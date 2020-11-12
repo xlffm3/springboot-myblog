@@ -25,6 +25,9 @@ public class LoginController {
 
     @GetMapping("/logout")
     public String logout(HttpSession httpSession) {
+        if (httpSession.getAttribute("loginDto") == null) {
+            return "redirect:/";
+        }
         httpSession.removeAttribute("loginDto");
         return "/index";
     }

@@ -63,6 +63,12 @@ public class MainControllerTest {
         isStatusOk(HttpMethod.GET, "/login");
     }
 
+    @DisplayName("회원탈퇴 페이지로 이동")
+    @Test
+    public void moveToWithdrawPage() {
+        isStatusOk(HttpMethod.GET, "/withdraw");
+    }
+
     private void isStatusOk(HttpMethod httpMethod, String uri) {
         webTestClient.method(httpMethod)
                 .uri(uri)

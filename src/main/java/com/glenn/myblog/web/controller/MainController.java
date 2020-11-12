@@ -32,6 +32,11 @@ public class MainController {
         return "signup";
     }
 
+    @GetMapping("/withdraw")
+    public String moveToWithdrawPage(HttpSession httpSession) {
+        return httpSession.getAttribute("loginDto") == null ? "redirect:/" : "/withdraw";
+    }
+
     @GetMapping("/login")
     public String moveToLoginPage(HttpSession httpSession) {
         return httpSession.getAttribute("loginDto") == null ? "/login" : "redirect:/";

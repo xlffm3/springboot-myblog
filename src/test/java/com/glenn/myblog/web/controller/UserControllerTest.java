@@ -1,5 +1,6 @@
 package com.glenn.myblog.web.controller;
 
+import com.glenn.myblog.domain.exception.WrongPasswordException;
 import com.glenn.myblog.domain.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -82,7 +84,6 @@ public class UserControllerTest {
         expectStatus(NAME_LENGTH_ERROR, "a", "aBcdEf!123", "tester23@gmail.com");
     }
 
-
     @DisplayName("이름 양식 오류")
     @ParameterizedTest
     @ValueSource(strings = {"jkjkjkjkppj", "jkj!k!3"})
@@ -128,6 +129,22 @@ public class UserControllerTest {
                     String body = new String(response.getResponseBody());
                     assertThat(body).contains("tester");
                     assertThat(body).contains("tester@gmail.com");
+                });
+    }
+
+    @DisplayName("입력 비밀번호가 다를 경우 회원 삭제 불가")
+    @Test
+    public void cannotDeleteUser() {
+        webTestClient.method(HttpMethod.POST)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData("password", "WrongPass!123"))
+                .exchange()
+                .expectStatus()
+                .isOk()
+                .expectBody()
+                .consumeWith(response -> {
+                    String body = new String(response.getResponseBody());
+                    assertThat(body).contains(WrongPasswordException.ERROR_MESSAGE);
                 });
     }
 }
