@@ -22,23 +22,27 @@ public class MainController {
         return "index";
     }
 
-    @GetMapping("/writing")
-    public String moveToWritingPage(HttpSession httpSession) {
-        return httpSession.getAttribute("loginDto") == null ? "redirect:/login" : "article-edit";
-    }
-
     @GetMapping("/signup")
-    public String moveToSignUpPage(@ModelAttribute UserDto userDto) {
-        return "signup";
-    }
-
-    @GetMapping("/withdraw")
-    public String moveToWithdrawPage(HttpSession httpSession) {
-        return httpSession.getAttribute("loginDto") == null ? "redirect:/" : "/withdraw";
+    public String moveToSignUpPage(HttpSession httpSession, @ModelAttribute UserDto userDto) {
+        return isLogin(httpSession) ? "redirect:/" : "signup";
     }
 
     @GetMapping("/login")
     public String moveToLoginPage(HttpSession httpSession) {
-        return httpSession.getAttribute("loginDto") == null ? "/login" : "redirect:/";
+        return isLogin(httpSession) ? "redirect:/" : "login";
+    }
+
+    @GetMapping("/withdraw")
+    public String moveToWithdrawPage(HttpSession httpSession) {
+        return isLogin(httpSession) ? "redirect:/login" : "withdraw";
+    }
+
+    @GetMapping("/writing")
+    public String moveToWritingPage(HttpSession httpSession) {
+        return isLogin(httpSession) ? "article-edit" : "redirect:/login";
+    }
+
+    private boolean isLogin(HttpSession httpSession) {
+        return httpSession.getAttribute("loginDto") != null;
     }
 }
