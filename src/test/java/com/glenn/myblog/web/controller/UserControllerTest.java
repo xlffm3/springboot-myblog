@@ -1,8 +1,10 @@
 package com.glenn.myblog.web.controller;
 
 import com.glenn.myblog.domain.exception.DuplicatedUserEmailException;
+import com.glenn.myblog.domain.exception.WrongEmailException;
 import com.glenn.myblog.domain.exception.WrongPasswordException;
 import com.glenn.myblog.domain.repository.UserRepository;
+import com.glenn.myblog.dto.LoginDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +37,6 @@ public class UserControllerTest {
 
     @Autowired
     private WebTestClient webTestClient;
-
     @Autowired
     private UserRepository userRepository;
 
@@ -117,21 +118,29 @@ public class UserControllerTest {
                 });
     }
 
-    @DisplayName("입력 비밀번호가 다를 경우 회원 삭제 불가")
+    @DisplayName("회원탈퇴 실패, 입력 비밀번호 다름")
     @Test
-    public void cannotDeleteUser() {
-        webTestClient.method(HttpMethod.POST)
-                .uri("/users/withdraw")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(BodyInserters.fromFormData("password", "WrongPass!123"))
-                .exchange()
-                .expectStatus()
-                .isOk()
-                .expectBody()
-                .consumeWith(response -> {
-                    String body = new String(response.getResponseBody());
-                    assertThat(body).contains(WrongPasswordException.ERROR_MESSAGE);
-                });
+    public void 회원탈퇴_실패_입력_비밀번호_다름() {
+        StatusAssertions statusAssertions = expectWithdrawStatus(getSessionWebTestClient(USER_ID), "wrongpass");
+        testErrorMessage(WrongPasswordException.ERROR_MESSAGE, statusAssertions);
+    }
+
+    @DisplayName("회원탈퇴 실패, 회원 세션 아이디 조회 불가")
+    @Test
+    public void 회원탈퇴_실패_회원_세션_아이디_조회_불가() {
+        StatusAssertions statusAssertions = expectWithdrawStatus(getSessionWebTestClient(888L), "wrongpass");
+        testErrorMessage(WrongEmailException.ERROR_MESSAGE, statusAssertions);
+    }
+
+    @DisplayName("회원탈퇴 성공")
+    @Test
+    public void 회원탈퇴_성공() {
+        expectSignUpStatus("mockuser", "paddkK!13", "guqamole13@naver.com");
+        long userId = userRepository.findByEmail("guqamole13@naver.com")
+                .orElseThrow(RuntimeException::new)
+                .getId();
+        expectWithdrawStatus(getSessionWebTestClient(userId), "paddkK!13")
+                .is3xxRedirection();
     }
 
     private StatusAssertions expectSignUpStatus(String name, String password, String email) {
@@ -146,6 +155,15 @@ public class UserControllerTest {
                 .expectStatus();
     }
 
+    private StatusAssertions expectWithdrawStatus(WebTestClient webTestClient, String password) {
+        return webTestClient.method(HttpMethod.POST)
+                .uri("/users/withdraw")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData("password", password))
+                .exchange()
+                .expectStatus();
+    }
+
     private void testErrorMessage(String errorMessage, StatusAssertions statusAssertions) {
         statusAssertions.isOk()
                 .expectBody()
@@ -153,5 +171,17 @@ public class UserControllerTest {
                     String body = new String(response.getResponseBody());
                     assertThat(body).contains(errorMessage);
                 });
+    }
+
+    private WebTestClient getSessionWebTestClient(Long id) {
+        return WebTestClient.bindToWebHandler(exchange -> {
+            return exchange.getSession()
+                    .doOnNext(webSession -> {
+                        webSession.getAttributes()
+                                .put("loginDto", LoginDto.builder()
+                                        .id(id)
+                                        .build());
+                    }).then();
+        }).build();
     }
 }
