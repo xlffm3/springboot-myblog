@@ -23,7 +23,7 @@ public class MainController {
     }
 
     @GetMapping("/writing")
-    public String moveToWritingPage() {
+    public String moveToWritingPage(HttpSession httpSession) {
         return "article-edit";
     }
 
