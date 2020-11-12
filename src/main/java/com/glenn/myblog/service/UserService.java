@@ -49,7 +49,6 @@ public class UserService {
                 });
     }
 
-    @Transactional
     public void deleteUser(Long id, String password) {
         User user = userRepository.findById(id)
                 .orElseThrow(WrongEmailException::new);

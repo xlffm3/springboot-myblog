@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" layout:decorator="layout/defaultLayout"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
+<body layout:fragment="body">
+<div class="container">
+    <h1>회원 탈퇴</h1>
+    <br>
+    <div class="col-md-6">
+        <form accept-charset="UTF-8" id="withdraw-form" method="post" th:action="@{/users/withdraw}">
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input class="form-control" id="password" name="password" placeholder="비밀번호를 입력하세요." required
+                       type="text">
+            </div>
+            <small class="text-danger" th:if="${not #strings.isEmpty(error)}" th:text="${message}"></small>
+            <div class="form-group">
+                <button class="btn btn-primary" id="btn-withdraw" type="submit">회원 탈퇴</button>
+            </div>
+            <a class="btn btn-secondary" href="/" role="button">Cancel</a>
+        </form>
+    </div>
+</div>
+</body>
+</html>

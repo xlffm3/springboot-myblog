@@ -34,10 +34,11 @@ public class UserController {
     }
 
     @PostMapping("/withdraw")
-    public String deleteUser(HttpSession httpSession, @ModelAttribute String password) {
+    public String deleteUser(HttpSession httpSession, @ModelAttribute("password") String password) {
         Long id = ((LoginDto) httpSession.getAttribute("loginDto"))
                 .getId();
         userService.deleteUser(id, password);
+        httpSession.removeAttribute("loginDto");
         return "redirect:/";
     }
 }
