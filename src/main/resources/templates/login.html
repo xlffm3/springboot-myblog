@@ -20,6 +20,7 @@
                 <input class="form-control" id="password" name="password" placeholder="비밀번호를 입력하세요." required
                        type="text">
             </div>
+            <small class="text-danger" th:if="${not #strings.isEmpty(error)}" th:text="${message}"></small>
             <div class="form-group">
                 <button class="btn btn-primary" id="btn-login" type="submit">Login</button>
             </div>

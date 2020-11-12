@@ -1,6 +1,8 @@
 package com.glenn.myblog.web;
 
 import com.glenn.myblog.domain.exception.DuplicatedUserEmailException;
+import com.glenn.myblog.domain.exception.WrongEmailException;
+import com.glenn.myblog.domain.exception.WrongPasswordException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,6 +26,15 @@ public class ControllerExceptionHandler {
         modelAndView.addObject("error", true);
         modelAndView.addObject("message", duplicatedUserEmailException.getMessage());
         modelAndView.setViewName("signup");
+        return modelAndView;
+    }
+
+    @ExceptionHandler({WrongEmailException.class, WrongPasswordException.class})
+    public ModelAndView handleWrongEmailException(RuntimeException loginException) {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("error", true);
+        modelAndView.addObject("message", loginException.getMessage());
+        modelAndView.setViewName("login");
         return modelAndView;
     }
 }
