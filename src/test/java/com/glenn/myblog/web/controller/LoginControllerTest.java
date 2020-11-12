@@ -89,7 +89,6 @@ class LoginControllerTest {
                 });
     }
 
-
     @DisplayName("틀린 비밀번호로 로그인 시도 : 에러")
     @Test
     public void login_fail_wrong_password() {
