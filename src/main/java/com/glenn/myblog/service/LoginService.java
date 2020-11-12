@@ -1,6 +1,8 @@
 package com.glenn.myblog.service;
 
 import com.glenn.myblog.domain.entity.User;
+import com.glenn.myblog.domain.exception.WrongEmailException;
+import com.glenn.myblog.domain.exception.WrongPasswordException;
 import com.glenn.myblog.domain.repository.UserRepository;
 import com.glenn.myblog.dto.LoginDto;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +18,9 @@ public class LoginService {
 
     public LoginDto login(LoginDto loginDto) {
         User user = userRepository.findByEmail(loginDto.getEmail())
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(WrongEmailException::new);
         if (!passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException();
+            throw new WrongPasswordException();
         }
         return LoginDto.builder()
                 .name(user.getName())

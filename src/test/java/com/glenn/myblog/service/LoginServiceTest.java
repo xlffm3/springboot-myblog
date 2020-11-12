@@ -91,7 +91,7 @@ class LoginServiceTest {
                 .email(loginEmail)
                 .password(loginPassword)
                 .build();
-        when(userRepository.findByEmail(loginEmail)).thenThrow(IllegalArgumentException.class);
+        when(userRepository.findByEmail(loginEmail)).thenThrow(WrongEmailException.class);
 
         assertThatThrownBy(() -> {
             loginService.login(loginDto);
