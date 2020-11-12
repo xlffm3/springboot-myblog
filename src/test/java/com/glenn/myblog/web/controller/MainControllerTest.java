@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.reactive.server.StatusAssertions;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 @ExtendWith(SpringExtension.class)
@@ -17,63 +18,76 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 public class MainControllerTest {
 
     @Autowired
-    private WebTestClient webTestClient;
-
-    @DisplayName("로그인 세션이 존재할 때 로그인 페이지 이동이 아닌 메인 페이지 리다이렉션")
-    @Test
-    public void cannotMoveToLoginPageWhenSessionExists() {
-        WebTestClient sessionWebTestClient = WebTestClient.bindToWebHandler(exchange -> {
-            return exchange.getSession()
-                    .doOnNext(webSession -> {
-                        webSession.getAttributes().put("loginDto", LoginDto.builder()
-                                .email("sessionemail@gmail.com")
-                                .password("Passs!12")
-                                .build());
-                    })
-                    .then();
-        }).build();
-        sessionWebTestClient.method(HttpMethod.GET)
-                .uri("/login")
-                .exchange()
-                .expectStatus()
-                .is3xxRedirection();
-    }
+    private WebTestClient normalWebTestClient;
+    private WebTestClient sessionWebTestClient = WebTestClient.bindToWebHandler(exchange -> {
+        return exchange.getSession()
+                .doOnNext(webSession -> {
+                    webSession.getAttributes()
+                            .put("loginDto", LoginDto.builder()
+                                    .id(1L).name("tester").email("tester@spring.com").password("Tester!12")
+                                    .build());
+                }).then();
+    }).build();
 
     @DisplayName("메인 페이지로 이동")
     @Test
-    public void moveToIndexPage() {
-        isStatusOk(HttpMethod.GET, "/");
+    public void 메인_페이지로_이동() {
+        expectStatus(normalWebTestClient, HttpMethod.GET, "/").isOk();
     }
 
-    @DisplayName("게시글 작성 페이지로 이동")
+    @DisplayName("Logout 상태면, 게시글 작성 페이지 이동 요청시 로그인 페이지로 이동")
     @Test
-    public void moveToWritingPage() {
-        isStatusOk(HttpMethod.GET, "/writing");
+    public void 로그아웃_상태에서_게시글_작성_페이지가_아닌_로그인_페이지로_이동() {
+        expectStatus(normalWebTestClient, HttpMethod.GET, "/writing").is3xxRedirection();
     }
 
-    @DisplayName("회원가입 페이지로 이동")
+    @DisplayName("Login 상태면, 게시글 작성 페이지 이동 요청시 정상 처리")
     @Test
-    public void moveToSignUpPage() {
-        isStatusOk(HttpMethod.GET, "/signup");
+    public void 로그인_상태에서_게시글_작성_페이지로_이동() {
+        expectStatus(sessionWebTestClient, HttpMethod.GET, "/writing").isOk();
     }
 
-    @DisplayName("로그인 페이지로 이동")
+    @DisplayName("Logout 상태면, 회원 가입 페이지 이동 요청시 정상 처리")
     @Test
-    public void moveToLoginPage() {
-        isStatusOk(HttpMethod.GET, "/login");
+    public void 로그아웃_상태에서_회원가입_페이지로_이동() {
+        expectStatus(normalWebTestClient, HttpMethod.GET, "/signup").isOk();
     }
 
-    @DisplayName("회원탈퇴 페이지로 이동")
+    @DisplayName("Login 상태면, 회원 가입 페이지 이동 요청시 메인 페이지로 이동")
     @Test
-    public void moveToWithdrawPage() {
-        isStatusOk(HttpMethod.GET, "/withdraw");
+    public void 로그인_상태에서_회원가입_페이지가_아닌_메인_페이지로_이동() {
+        expectStatus(sessionWebTestClient, HttpMethod.GET, "/signup").is3xxRedirection();
     }
 
-    private void isStatusOk(HttpMethod httpMethod, String uri) {
-        webTestClient.method(httpMethod)
+    @DisplayName("Logout 상태면, 로그인 페이지로 이동 요청시 정상 처리")
+    @Test
+    public void 로그아웃_상태에서_로그인_페이지로_이동() {
+        expectStatus(normalWebTestClient, HttpMethod.GET, "/login").isOk();
+    }
+
+    @DisplayName("Login 상태면, 로그인 페이지로 이동 요청시 메인 페이지로 이동")
+    @Test
+    public void 로그인_상태에서_로그인_페이지가_아닌_메인_페이지로_이동() {
+        expectStatus(sessionWebTestClient, HttpMethod.GET, "/login").is3xxRedirection();
+    }
+
+    @DisplayName("Logout 상태에서, 회원탈퇴 페이지로 이동 요청시 로그인 페이지로 이동")
+    @Test
+    public void 로그아웃_상태에서_회원탈퇴_페이지가_아닌_로그인_페이지로_이동() {
+        expectStatus(normalWebTestClient, HttpMethod.GET, "/withdraw").is3xxRedirection();
+    }
+
+
+    @DisplayName("Login 상태에서, 회원탈퇴 페이지로 이동 요청시 정상 처리")
+    @Test
+    public void 로그인_상태에서_회원탈퇴_페이지로_이동() {
+        expectStatus(sessionWebTestClient, HttpMethod.GET, "/withdraw").isOk();
+    }
+
+    private StatusAssertions expectStatus(WebTestClient webTestClient, HttpMethod httpMethod, String uri) {
+        return webTestClient.method(httpMethod)
                 .uri(uri)
                 .exchange()
-                .expectStatus()
-                .isOk();
+                .expectStatus();
     }
 }
