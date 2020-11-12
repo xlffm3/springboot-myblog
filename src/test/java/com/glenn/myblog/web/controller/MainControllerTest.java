@@ -77,11 +77,17 @@ public class MainControllerTest {
         expectStatus(normalWebTestClient, HttpMethod.GET, "/withdraw").is3xxRedirection();
     }
 
-
     @DisplayName("Login 상태에서, 회원탈퇴 페이지로 이동 요청시 정상 처리")
     @Test
     public void 로그인_상태에서_회원탈퇴_페이지로_이동() {
         expectStatus(sessionWebTestClient, HttpMethod.GET, "/withdraw").isOk();
+    }
+
+    @DisplayName("Login 상태에서, 로그아웃 요청시 정상 처리")
+    @Test
+    public void 로그인_상태에서_로그아웃_요청_정상_처리() {
+        expectStatus(sessionWebTestClient, HttpMethod.GET, "/logout").is3xxRedirection();
+        expectStatus(sessionWebTestClient, HttpMethod.GET, "/writing").is3xxRedirection();
     }
 
     private StatusAssertions expectStatus(WebTestClient webTestClient, HttpMethod httpMethod, String uri) {

@@ -32,14 +32,27 @@ public class MainController {
         return isLogin(httpSession) ? "redirect:/" : "login";
     }
 
+    @GetMapping("/logout")
+    public String logout(HttpSession httpSession) {
+        if (isLogin(httpSession)) {
+            httpSession.removeAttribute("loginDto");
+        }
+        return "redirect:/";
+    }
+
     @GetMapping("/withdraw")
     public String moveToWithdrawPage(HttpSession httpSession) {
-        return isLogin(httpSession) ? "redirect:/login" : "withdraw";
+        return isLogin(httpSession) ? "withdraw" : "redirect:/login";
     }
 
     @GetMapping("/writing")
     public String moveToWritingPage(HttpSession httpSession) {
         return isLogin(httpSession) ? "article-edit" : "redirect:/login";
+    }
+
+    @GetMapping("/users")
+    public String moveToUserListPage() {
+        return "redirect:/users/list";
     }
 
     private boolean isLogin(HttpSession httpSession) {

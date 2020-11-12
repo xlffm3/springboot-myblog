@@ -21,7 +21,7 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping
+    @GetMapping("/list")
     public String moveToUserListPage(Model model) {
         model.addAttribute("users", userService.findAll());
         return "user-list";
