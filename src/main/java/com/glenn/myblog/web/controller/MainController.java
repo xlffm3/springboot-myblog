@@ -8,6 +8,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import javax.servlet.http.HttpSession;
+
 @RequiredArgsConstructor
 @Controller
 public class MainController {
@@ -31,7 +33,7 @@ public class MainController {
     }
 
     @GetMapping("/login")
-    public String moveToLoginPage() {
-        return "login";
+    public String moveToLoginPage(HttpSession httpSession) {
+        return httpSession.getAttribute("loginDto") == null ? "/login" : "/";
     }
 }

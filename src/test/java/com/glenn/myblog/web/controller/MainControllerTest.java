@@ -1,6 +1,7 @@
 package com.glenn.myblog.web.controller;
 
 import com.glenn.myblog.dto.LoginDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +12,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.util.Arrays;
+
 @ExtendWith(SpringExtension.class)
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -19,10 +22,9 @@ public class MainControllerTest {
     @Autowired
     private WebTestClient webTestClient;
 
-    @DisplayName("로그인 세션이 존재할 때 로그인 페이지 이동이 아닌 메인 페이지 리다이렉션")
-    @Test
-    public void cannotMoveToLoginPageWhenSessionExists() {
-        WebTestClient sessionTestClient = WebTestClient.bindToWebHandler(exchange -> {
+    @BeforeEach
+    public void setup() {
+        webTestClient = WebTestClient.bindToWebHandler(exchange -> {
             String path = exchange.getRequest().getURI().getPath();
             if (path.equals("/login")) {
                 return exchange.getSession()
@@ -36,11 +38,20 @@ public class MainControllerTest {
             }
             return null;
         }).build();
-        sessionTestClient.method(HttpMethod.GET)
+    }
+
+    @DisplayName("로그인 세션이 존재할 때 로그인 페이지 이동이 아닌 메인 페이지 리다이렉션")
+    @Test
+    public void cannotMoveToLoginPageWhenSessionExists() {
+        webTestClient.method(HttpMethod.GET)
                 .uri("/login")
                 .exchange()
                 .expectStatus()
-                .is3xxRedirection();
+                .isOk()
+                .expectBody()
+                .consumeWith(response -> {
+                    System.out.println(Arrays.toString(response.getResponseBody()));
+                });
     }
 
     @DisplayName("메인 페이지로 이동")
