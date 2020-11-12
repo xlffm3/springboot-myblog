@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -64,5 +65,32 @@ class LoginControllerTest {
                 .exchange()
                 .expectStatus()
                 .is3xxRedirection();
+    }
+
+    @DisplayName("가입하지 않은 이메일 로그인 시도 : 에러")
+    @Test
+    public void login_fail_wrong_email() {
+        webTestClient.method(HttpMethod.POST)
+                .uri("/login")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData("email", "wrongspringtester@gmail.com")
+                        .with("password", "Pass!123"))
+                .exchange()
+                .expectStatus()
+                .is4xxClientError();
+    }
+
+
+    @DisplayName("틀린 비밀번호로 로그인 시도 : 에러")
+    @Test
+    public void login_fail_wrong_password() {
+        webTestClient.method(HttpMethod.POST)
+                .uri("/login")
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData("email", "springtester@gmail.com")
+                        .with("password", "wrongpassword"))
+                .exchange()
+                .expectStatus()
+                .is4xxClientError();
     }
 }
