@@ -1,5 +1,6 @@
 package com.glenn.myblog.web.controller;
 
+import com.glenn.myblog.dto.LoginDto;
 import com.glenn.myblog.dto.UserDto;
 import com.glenn.myblog.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 @RequiredArgsConstructor
@@ -31,9 +33,11 @@ public class UserController {
         return "redirect:/login";
     }
 
-    @GetMapping("/withdraw")
-    public String deleteUser(@ModelAttribute String password) {
-
-        return null;
+    @PostMapping("/withdraw")
+    public String deleteUser(HttpSession httpSession, @ModelAttribute String password) {
+        Long id = ((LoginDto) httpSession.getAttribute("loginDto"))
+                .getId();
+        userService.deleteUser(id, password);
+        return "redirect:/";
     }
 }

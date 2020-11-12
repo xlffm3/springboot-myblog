@@ -136,6 +136,7 @@ public class UserControllerTest {
     @Test
     public void cannotDeleteUser() {
         webTestClient.method(HttpMethod.POST)
+                .uri("/users/withdraw")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData("password", "WrongPass!123"))
                 .exchange()
