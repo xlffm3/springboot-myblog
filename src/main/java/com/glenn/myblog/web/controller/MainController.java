@@ -34,6 +34,6 @@ public class MainController {
 
     @GetMapping("/login")
     public String moveToLoginPage(HttpSession httpSession) {
-        return httpSession.getAttribute("loginDto") == null ? "/login" : "/";
+        return httpSession.getAttribute("loginDto") == null ? "/login" : "redirect:/";
     }
 }
