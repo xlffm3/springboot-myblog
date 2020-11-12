@@ -1,6 +1,8 @@
 package com.glenn.myblog.web.controller;
 
 import com.glenn.myblog.domain.entity.User;
+import com.glenn.myblog.domain.exception.WrongEmailException;
+import com.glenn.myblog.domain.exception.WrongPasswordException;
 import com.glenn.myblog.domain.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @AutoConfigureWebTestClient
@@ -77,7 +81,12 @@ class LoginControllerTest {
                         .with("password", "Pass!123"))
                 .exchange()
                 .expectStatus()
-                .is4xxClientError();
+                .isOk()
+                .expectBody()
+                .consumeWith(response -> {
+                    String body = new String(response.getResponseBody());
+                    assertThat(body).contains(WrongEmailException.ERROR_MESSAGE);
+                });
     }
 
 
@@ -91,6 +100,11 @@ class LoginControllerTest {
                         .with("password", "wrongpassword"))
                 .exchange()
                 .expectStatus()
-                .is4xxClientError();
+                .isOk()
+                .expectBody()
+                .consumeWith(response -> {
+                    String body = new String(response.getResponseBody());
+                    assertThat(body).contains(WrongPasswordException.ERROR_MESSAGE);
+                });
     }
 }
