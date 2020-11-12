@@ -106,7 +106,7 @@ public class UserControllerTest {
     @Test
     public void 회원_목록_페이지로_이동() {
         webTestClient.get()
-                .uri("/users")
+                .uri("/users/list")
                 .exchange()
                 .expectStatus()
                 .isOk()
@@ -170,6 +170,7 @@ public class UserControllerTest {
                 .consumeWith(response -> {
                     String body = new String(response.getResponseBody());
                     assertThat(body).contains(errorMessage);
+                    System.out.println(body);
                 });
     }
 
