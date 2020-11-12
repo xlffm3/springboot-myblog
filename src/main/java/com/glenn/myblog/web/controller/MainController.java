@@ -24,7 +24,7 @@ public class MainController {
 
     @GetMapping("/writing")
     public String moveToWritingPage(HttpSession httpSession) {
-        return "article-edit";
+        return httpSession.getAttribute("loginDto") == null ? "redirect:/login" : "article-edit";
     }
 
     @GetMapping("/signup")

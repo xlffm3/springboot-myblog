@@ -18,27 +18,43 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 public class SessionMoveTest {
 
     @Autowired
-    private WebTestClient webTestClient;
+    private WebTestClient normalWebTestClient;
+    private WebTestClient sessionWebTestClient;
 
     @BeforeEach
     public void setup() {
-        webTestClient = WebTestClient.bindToWebHandler(exchange -> {
-            return exchange.getSession()
-                    .doOnNext(webSession -> {
-                        webSession.getAttributes().put("loginDto", LoginDto.builder()
-                                .id(1L).email("tester@gmail.com").password("Pass!123").build());
-                    })
-                    .then();
+        sessionWebTestClient = WebTestClient.bindToWebHandler(exchange -> {
+            String path = exchange.getRequest().getURI().getPath();
+            if (path.equals("/writing")) {
+                return exchange.getSession()
+                        .doOnNext(webSession -> {
+                            webSession.getAttributes()
+                                    .put("loginDto", LoginDto.builder()
+                                            .id(1L).email("tester@gmail.com").password("Pass!123").build());
+                        })
+                        .then();
+            }
+            return null;
         }).build();
     }
 
-    @DisplayName("Login Session이 없으면 글 작성 페이지로 이동이 불가능")
+    @DisplayName("Login Session이 없으면 글 작성 페이지로 이동시 Login Page로 Redirect")
     @Test
-    public void 글_작성_페이지_이동_불가능() {
-        webTestClient.method(HttpMethod.GET)
-                .uri("/signup")
+    public void 글_작성_페이지_이동_불가능_Redirect() {
+        normalWebTestClient.method(HttpMethod.GET)
+                .uri("/writing")
                 .exchange()
                 .expectStatus()
                 .is3xxRedirection();
+    }
+
+    @DisplayName("Login Session이 있으면 글 작성 페이지로 이동")
+    @Test
+    public void 글_작성_페이지_이동_가능() {
+        sessionWebTestClient.method(HttpMethod.GET)
+                .uri("/writing")
+                .exchange()
+                .expectStatus()
+                .isOk();
     }
 }
