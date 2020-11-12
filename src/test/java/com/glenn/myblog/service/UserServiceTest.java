@@ -90,4 +90,12 @@ public class UserServiceTest {
         verify(userRepository, times(1)).findByEmail(eq("tester@naver.com"));
         verify(userRepository, never()).save(any());
     }
+
+    @DisplayName("회원 삭제")
+    @Test
+    public void removeUserAccount() {
+        userService.deleteUser(1L);
+
+        verify(userRepository, times(1)).deleteById(1L);
+    }
 }

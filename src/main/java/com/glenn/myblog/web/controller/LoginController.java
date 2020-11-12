@@ -26,6 +26,6 @@ public class LoginController {
     @GetMapping("/logout")
     public String logout(HttpSession httpSession) {
         httpSession.removeAttribute("loginDto");
-        return "/";
+        return "/index";
     }
 }

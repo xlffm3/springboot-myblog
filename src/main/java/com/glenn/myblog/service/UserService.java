@@ -46,4 +46,9 @@ public class UserService {
                     throw new DuplicatedUserEmailException(email);
                 });
     }
+
+    @Transactional
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
 }

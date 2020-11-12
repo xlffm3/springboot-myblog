@@ -23,6 +23,7 @@ public class LoginService {
             throw new WrongPasswordException();
         }
         return LoginDto.builder()
+                .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .build();
