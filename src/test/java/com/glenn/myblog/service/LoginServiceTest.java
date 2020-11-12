@@ -1,6 +1,8 @@
 package com.glenn.myblog.service;
 
 import com.glenn.myblog.domain.entity.User;
+import com.glenn.myblog.domain.exception.WrongEmailException;
+import com.glenn.myblog.domain.exception.WrongPasswordException;
 import com.glenn.myblog.domain.repository.UserRepository;
 import com.glenn.myblog.dto.LoginDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,7 +79,7 @@ class LoginServiceTest {
 
         assertThatThrownBy(() -> {
             loginService.login(loginDto);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(WrongPasswordException.class);
     }
 
     @Test
@@ -93,6 +95,6 @@ class LoginServiceTest {
 
         assertThatThrownBy(() -> {
             loginService.login(loginDto);
-        }).isInstanceOf(IllegalArgumentException.class);
+        }).isInstanceOf(WrongEmailException.class);
     }
 }
