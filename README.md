@@ -13,7 +13,6 @@
     * Session Validation을 Controller가 아닌 Interceptor단에서 적용해보기
 * Spring Security & OAuth 2.0 (Google, Naver Login) 적용.
 
-
 <br>
 
 ## 프로젝트 개발 환경 :: Back-End

@@ -1,5 +1,6 @@
 package com.glenn.myblog.web.controller;
 
+import com.glenn.myblog.dto.LoginDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,30 @@ public class MainControllerTest {
 
     @Autowired
     private WebTestClient webTestClient;
+
+    @DisplayName("로그인 세션이 존재할 때 로그인 페이지 이동이 아닌 메인 페이지 리다이렉션")
+    @Test
+    public void cannotMoveToLoginPageWhenSessionExists() {
+        WebTestClient sessionTestClient = WebTestClient.bindToWebHandler(exchange -> {
+            String path = exchange.getRequest().getURI().getPath();
+            if (path.equals("/login")) {
+                return exchange.getSession()
+                        .doOnNext(webSession -> {
+                            webSession.getAttributes().put("loginDto", LoginDto.builder()
+                                    .email("sessionemail@gmail.com")
+                                    .password("Passs!12")
+                                    .build());
+                        })
+                        .then();
+            }
+            return null;
+        }).build();
+        sessionTestClient.method(HttpMethod.GET)
+                .uri("/login")
+                .exchange()
+                .expectStatus()
+                .is3xxRedirection();
+    }
 
     @DisplayName("메인 페이지로 이동")
     @Test
