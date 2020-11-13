@@ -25,13 +25,13 @@ public class ArticleRepositoryTest {
     private ArticleRepository articleRepository;
 
     @AfterEach
-    public void deleteAll() {
+    public void 테스트_게시글_삭제() {
         articleRepository.deleteAll();
     }
 
     @DisplayName("Article 생성 시 JPA Auditing을 통해 작성 및 수정 시간이 자동 저장")
     @Test
-    public void auditCreatedDate() {
+    public void 작성_수정_시간_자동_저장() {
         LocalDateTime localDateTime = LocalDateTime.now();
 
         testEntityManager.persist(Article.builder()
