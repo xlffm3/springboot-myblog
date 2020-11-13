@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
@@ -37,7 +38,7 @@ public class UserServiceTest {
     private User user = User.builder()
             .name("tester")
             .email("tester@naver.com")
-            .password("abcDE!123")
+            .password(new BCryptPasswordEncoder().encode("abcDE!123"))
             .build();
 
     @BeforeEach
@@ -45,9 +46,9 @@ public class UserServiceTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    @DisplayName("회원 목록 조회를 하나, 패스워드는 생략함")
+    @DisplayName("패스워드를 생략한 회원 리스트 조회")
     @Test
-    public void findAll() {
+    public void 회원_리스트_조회_패스워드_제외() {
         List<User> users = Arrays.asList(user);
 
         when(userRepository.findAll()).thenReturn(users);
@@ -61,7 +62,7 @@ public class UserServiceTest {
 
     @DisplayName("회원 생성")
     @Test
-    public void save() {
+    public void 회원_생성() {
         when(userRepository.save(any())).thenReturn(user);
 
         UserDto userDto = UserDto.builder()
@@ -73,13 +74,14 @@ public class UserServiceTest {
 
         assertThat(resultDto.getName()).isEqualTo("tester");
         assertThat(resultDto.getEmail()).isEqualTo("tester@naver.com");
+
         verify(userRepository, times(1)).save(any());
         verify(passwordEncoder, times(1)).encode(eq("abcDE!123"));
     }
 
-    @DisplayName("이메일 중복 시 회원 생성 불가")
+    @DisplayName("회원 생성 실패, 이메일 중복")
     @Test
-    public void saveWhenDuplicatedEmail() {
+    public void 회원_생성_실패_이메일_중복() {
         UserDto userDto = UserDto.of(user);
 
         when(userRepository.findByEmail("tester@naver.com"))
@@ -95,36 +97,38 @@ public class UserServiceTest {
 
     @DisplayName("회원 삭제 성공")
     @Test
-    public void removeUserAccount() {
+    public void 회원_삭제_성공() {
         String password = "abcDE!123";
+
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(password, "abcDE!123")).thenReturn(true);
+        when(passwordEncoder.matches(password, user.getPassword())).thenReturn(true);
+
         userService.deleteUser(1L, password);
 
         verify(userRepository, times(1)).deleteById(1L);
         verify(userRepository, times(1)).findById(1L);
-        verify(passwordEncoder, times(1)).matches(password, "abcDE!123");
+        verify(passwordEncoder, times(1)).matches(password, user.getPassword());
     }
 
-    @DisplayName("회원 삭제 실패 : 비밀번호가 다름")
+    @DisplayName("회원 삭제 실패, 비밀번호 불일치")
     @Test
-    public void removeUserAccount_실패() {
+    public void 회원_삭제_실패_비밀번호_불일치() {
         String password = "wrongpass";
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(password, "abcDE!123")).thenReturn(false);
+        when(passwordEncoder.matches(password, user.getPassword())).thenReturn(false);
 
         assertThatThrownBy(() -> {
             userService.deleteUser(1L, password);
         }).isInstanceOf(WrongPasswordException.class);
 
         verify(userRepository, times(1)).findById(1L);
-        verify(passwordEncoder, times(1)).matches(password, "abcDE!123");
+        verify(passwordEncoder, times(1)).matches(password, user.getPassword());
     }
 
-    @DisplayName("회원 삭제 실패 : 유저가 없음")
+    @DisplayName("회원 삭제 실패, 유저가 없음")
     @Test
-    public void removeUserAccount_실패_유저_없음() {
+    public void 회원_삭제_실패_유저_없음() {
         String password = "wrongpass";
 
         when(userRepository.findById(2L)).thenThrow(WrongEmailException.class);
