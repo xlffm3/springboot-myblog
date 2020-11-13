@@ -26,7 +26,7 @@ public class ArticleControllerTest {
 
     @DisplayName("테스트 게시글 작성")
     @BeforeEach
-    public void createArticle() {
+    public void 테스트_게시글_작성() {
         webTestClient.method(HttpMethod.POST)
                 .uri("/articles")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -45,30 +45,30 @@ public class ArticleControllerTest {
                 });
     }
 
-    @DisplayName("테스트 게시글 삭제")
-    @AfterEach
-    public void deleteArticle() {
-        expectStatus(HttpMethod.DELETE, "/articles/" + ARTICLE_ID)
-                .is3xxRedirection();
-    }
-
     @DisplayName("게시글 조회")
     @Test
-    public void readArticle() {
+    public void 게시글_조회() {
         expectStatus(HttpMethod.GET, "/articles/" + ARTICLE_ID)
                 .isOk();
     }
 
+    @DisplayName("게시글 삭제")
+    @AfterEach
+    public void 게시글_삭제() {
+        expectStatus(HttpMethod.DELETE, "/articles/" + ARTICLE_ID)
+                .is3xxRedirection();
+    }
+
     @DisplayName("게시글 수정 페이지로 이동")
     @Test
-    public void moveToArticleEditPage() {
+    public void 게시글_수정_페이지로_이동() {
         expectStatus(HttpMethod.GET, "/articles/" + ARTICLE_ID + "/edit")
                 .isOk();
     }
 
     @DisplayName("게시글 수정")
     @Test
-    public void updateArticle() {
+    public void 게시글_수정() {
         webTestClient.method(HttpMethod.PUT)
                 .uri("/articles/" + ARTICLE_ID)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
