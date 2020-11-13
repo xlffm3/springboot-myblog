@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.reactive.server.StatusAssertions;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
@@ -24,6 +25,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureWebTestClient
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LoginControllerTest {
+    private static final String TESTER_NAME = "tester";
+    private static final String TESTER_PASSWORD = "Password!12";
+    private static final String TESTER_EMAIL = "springtester@gmail.com";
 
     @Autowired
     private WebTestClient webTestClient;
@@ -32,78 +36,59 @@ class LoginControllerTest {
     private UserRepository userRepository;
 
     @BeforeEach
-    public void createUser() {
+    public void 테스트_유저_생성() {
         webTestClient.method(HttpMethod.POST)
                 .uri("/users")
-                .body(BodyInserters.fromFormData("name", "tester")
-                        .with("email", "springtester@gmail.com")
-                        .with("password", "Password!12"))
+                .body(BodyInserters.fromFormData("name", TESTER_NAME)
+                        .with("email", TESTER_EMAIL)
+                        .with("password", TESTER_PASSWORD))
                 .exchange()
                 .expectStatus()
                 .is3xxRedirection();
     }
 
     @AfterEach
-    public void tearDown() {
-        User user = userRepository.findByEmail("springtester@gmail.com").get();
+    public void 테스트_유저_삭제() {
+        User user = userRepository.findByEmail(TESTER_EMAIL).get();
         userRepository.delete(user);
     }
 
-    @DisplayName("정상적으로 로그인된다.")
+    @DisplayName("정상적으로 로그인 처리")
     @Test
-    public void loginOk() {
-        webTestClient.method(HttpMethod.POST)
-                .uri("/login")
-                .body(BodyInserters.fromFormData("email", "springtester@gmail.com")
-                        .with("password", "Password!12"))
-                .exchange()
-                .expectStatus()
-                .is3xxRedirection();
+    public void 로그인_성공() {
+        expectLoginStatus(TESTER_EMAIL, TESTER_PASSWORD).is3xxRedirection();
     }
 
-    @DisplayName("정상적으로 로그아웃된다.")
+    @DisplayName("로그인 실패, 가입하지 않은 이메일")
     @Test
-    public void logoutOk() {
-        webTestClient.method(HttpMethod.GET)
-                .uri("/logout")
-                .exchange()
-                .expectStatus()
-                .is3xxRedirection();
+    public void 로그인_실패_가입하지_않은_이메일() {
+        StatusAssertions statusAssertions = expectLoginStatus("wrongspringtester@gmail.com", TESTER_PASSWORD);
+        testErrorMessage(WrongEmailException.ERROR_MESSAGE, statusAssertions);
     }
 
-    @DisplayName("가입하지 않은 이메일 로그인 시도 : 에러")
+    @DisplayName("로그인 실패, 비밀번호 오류")
     @Test
-    public void login_fail_wrong_email() {
-        webTestClient.method(HttpMethod.POST)
+    public void 로그인_실패_비밀번호_오류() {
+        StatusAssertions statusAssertions = expectLoginStatus(TESTER_EMAIL, "wrongpass");
+        testErrorMessage(WrongPasswordException.ERROR_MESSAGE, statusAssertions);
+    }
+
+    private StatusAssertions expectLoginStatus(String email, String password) {
+        return webTestClient.post()
                 .uri("/login")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(BodyInserters.fromFormData("email", "wrongspringtester@gmail.com")
-                        .with("password", "Pass!123"))
+                .body(BodyInserters.fromFormData("email", email)
+                        .with("password", password))
                 .exchange()
-                .expectStatus()
-                .isOk()
+                .expectStatus();
+    }
+
+    private void testErrorMessage(String errorMessage, StatusAssertions statusAssertions) {
+        statusAssertions.isOk()
                 .expectBody()
                 .consumeWith(response -> {
                     String body = new String(response.getResponseBody());
-                    assertThat(body).contains(WrongEmailException.ERROR_MESSAGE);
-                });
-    }
-
-    @DisplayName("틀린 비밀번호로 로그인 시도 : 에러")
-    @Test
-    public void login_fail_wrong_password() {
-        webTestClient.method(HttpMethod.POST)
-                .uri("/login")
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .body(BodyInserters.fromFormData("email", "springtester@gmail.com")
-                        .with("password", "wrongpassword"))
-                .exchange()
-                .expectStatus()
-                .isOk()
-                .expectBody()
-                .consumeWith(response -> {
-                    String body = new String(response.getResponseBody());
-                    assertThat(body).contains(WrongPasswordException.ERROR_MESSAGE);
+                    assertThat(body).contains(errorMessage);
                 });
     }
 }

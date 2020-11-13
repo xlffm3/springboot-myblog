@@ -30,7 +30,6 @@
                 <label for="email">Email</label>
                 <input class="form-control" id="email" name="email" placeholder="이메일을 입력하세요." required type="text">
                 <small class="text-danger" th:errors="*{email}" th:if="${#fields.hasErrors('email')}"></small>
-                <small class="text-danger" id="email-error-message"></small>
             </div>
             <div class="form-group">
                 <label for="password-confirm">Confirm Password</label>
